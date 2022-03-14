@@ -1,89 +1,70 @@
 """This is block module"""
 
+
 class block:
-    def __init__(self,type,direc):#定义块类的种类，方向
-        self.type=type
-        self.direc=direc
-        self.x=5
-        self.y=22
-        
-    def rotateto(self,direc):#定义旋转操作
-        self.direc=direc
-        
-    def move(self,x,y):#定义移动操作
-        self.y+=y
-        self.x+=x
-    
-    def showblock(self):#定义返回各方块位置操作
-        n=self.type
-        m=self.direc
-        x=self.x
-        y=self.y
-        if n==1:#I型
-            if m==0:
-                return [(x-1,y),(x,y),(x+1,y),(x+2,y)]
-            elif m==1:
-                return [(x,y),(x,y+1),(x,y-1),(x,y-2)]
-            elif m==2:
-                return [(x-1,y),(x,y),(x+1,y),(x-2,y)]
-            elif m==3:
-                return [(x,y),(x,y+1),(x,y+2),(x,y-1)]
-        elif n==2:#J型
-            if m==0:
-                return [(x-1,y),(x,y),(x-1,y+1),(x+1,y)]
-            elif m==1:
-                return [(x,y),(x,y-1),(x,y+1),(x+1,y+1)]
-            elif m==2:
-                return [(x-1,y),(x,y),(x+1,y),(x+1,y-1)]
-            elif m==3:
-                return [(x,y),(x,y+1),(x,y-1),(x-1,y-1)]
-        elif n==3:#L型
-            if m==0:
-                return [(x-1,y),(x,y),(x+1,y),(x+1,y+1)]
-            elif m==1:
-                return [(x,y),(x,y-1),(x,y+1),(x+1,y-1)]
-            elif m==2:
-                return [(x-1,y),(x-1,y-1),(x+1,y),(x,y)]
-            elif m==3:
-                return [(x,y),(x,y-1),(x,y+1),(x-1,y+1)]
-        elif n==4:#O型
-            if m==0:
-                return [(x,y),(x+1,y),(x,y+1),(x+1,y+1)]
-            elif m==1:
-                return [(x,y),(x+1,y),(x+1,y-1),(x,y-1)]
-            elif m==2:
-                return [(x,y),(x-1,y),(x-1,y-1),(x,y-1)]
-            elif m==3:
-                return [(x,y),(x-1,y),(x-1,y+1),(x,y+1)]
-        elif n==5:#S型
-            if m==0:
-                return [(x,y),(x,y+1),(x+1,y+1),(x-1,y)]
-            elif m==1:
-                return [(x,y),(x+1,y),(x+1,y-1),(x,y+1)]
-            elif m==2:
-                return [(x+1,y),(x,y),(x,y-1),(x-1,y-1)]
-            elif m==3:
-                return [(x,y),(x,y-1),(x-1,y),(x-1,y+1)]
-        elif n==6:#T型
-            if m==0:
-                return [(x,y),(x+1,y),(x-1,y),(x,y+1)]
-            elif m==1:
-                return [(x,y),(x,y-1),(x,y+1),(x+1,y)]
-            elif m==2:
-                return [(x-1,y),(x,y),(x+1,y),(x,y-1)]
-            elif m==3:
-                return [(x,y),(x,y+1),(x,y-1),(x-1,y)]
-        elif n==7:#Z型
-            if m==0:
-                return [(x+1,y),(x,y),(x,y+1),(x-1,y+1)]
-            elif m==1:
-                return [(x,y),(x,y-1),(x+1,y),(x+1,y+1)]
-            elif m==2:
-                return [(x-1,y),(x,y),(x,y-1),(x+1,y-1)]
-            elif m==3:
-                return [(x,y),(x,y+1),(x-1,y-1),(x-1,y)]
+    offsetTable = [
+        [  # I型
+            [(-1, 0), (0, 0), (1, 0), (2, 0)],
+            [(0, 0), (0, 1), (0, -1), (0, -2)],
+            [(-1, 0), (0, 0), (1, 0), (-2, 0)],
+            [(0, 0), (0, 1), (0, 2), (0, -1)],
+        ],
+        [  # J型
+            [(-1, 0), (0, 0), (-1, 1), (1, 0)],
+            [(0, 0), (0, -1), (0, 1), (1, 1)],
+            [(-1, 0), (0, 0), (1, 0), (1, -1)],
+            [(0, 0), (0, 1), (0, -1), (-1, -1)],
+        ],
+        [  # L型
+            [(-1, 0), (0, 0), (1, 0), (1, 1)],
+            [(0, 0), (0, -1), (0, 1), (1, -1)],
+            [(-1, 0), (-1, -1), (1, 0), (0, 0)],
+            [(0, 0), (0, -1), (0, 1), (-1, 1)],
+        ],
+        [  # O型
+            [(0, 0), (1, 0), (0, 1), (1, 1)],
+            [(0, 0), (1, 0), (1, -1), (0, -1)],
+            [(0, 0), (-1, 0), (-1, -1), (0, -1)],
+            [(0, 0), (-1, 0), (-1, 1), (0, 1)],
+        ],
+        [  # S型
+            [(0, 0), (0, 1), (1, 1), (-1, 0)],
+            [(0, 0), (1, 0), (1, -1), (0, 1)],
+            [(1, 0), (0, 0), (0, -1), (-1, -1)],
+            [(0, 0), (0, -1), (-1, 0), (-1, 1)],
+        ],
+        [  # T型
+            [(0, 0), (1, 0), (-1, 0), (0, 1)],
+            [(0, 0), (0, -1), (0, 1), (1, 0)],
+            [(-1, 0), (0, 0), (1, 0), (0, -1)],
+            [(0, 0), (0, 1), (0, -1), (-1, 0)],
+        ],
+        [  # Z型
+            [(1, 0), (0, 0), (0, 1), (-1, 1)],
+            [(0, 0), (0, -1), (1, 0), (1, 1)],
+            [(-1, 0), (0, 0), (0, -1), (1, -1)],
+            [(0, 0), (0, 1), (-1, -1), (-1, 0)],
+        ],
+    ]
 
+    def __init__(self, type, direc):  # 定义块类的种类，方向
+        self.type = type
+        self.direc = direc
+        self.x = 5
+        self.y = 22
 
-                
-            
-        
+    def rotateto(self, direc):  # 定义旋转操作
+        self.direc = direc
+
+    def move(self, x, y):  # 定义移动操作
+        self.y += y
+        self.x += x
+
+    def showblock(self):  # 定义返回各方块位置操作
+        offsets = block.offsetTable[self.type][self.direc]
+        return [
+            (self.x + offsets[0][0], self.y + offsets[0][1]),
+            (self.x + offsets[1][0], self.y + offsets[1][1]),
+            (self.x + offsets[2][0], self.y + offsets[2][1]),
+            (self.x + offsets[3][0], self.y + offsets[3][1]),
+        ]

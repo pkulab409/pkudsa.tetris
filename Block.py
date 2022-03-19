@@ -1,7 +1,7 @@
 """This is block module"""
 
 #形状的type参量的数据范围是1~7,direc的四个方向按照规则文档定义
-class block:
+class Block:
     offsetTable = [[],
         [  # I型
             [(-1, 0), (0, 0), (1, 0), (2, 0)],
@@ -56,12 +56,12 @@ class block:
     def rotateto(self, direc):  # 定义旋转操作
         self.direc = direc
 
-    def move(self, x, y):  # 定义移动操作
+    def moveto(self, x, y):  # 定义移动操作
         self.y = y
         self.x = x
 
     def showblock(self):  # 定义返回各方块位置操作
-        offsets = block.offsetTable[self.type][self.direc]
+        offsets = Block.offsetTable[self.type][self.direc]
         return [
             (self.x + offsets[0][0], self.y + offsets[0][1]),
             (self.x + offsets[1][0], self.y + offsets[1][1]),

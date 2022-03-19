@@ -1,12 +1,12 @@
-import Board
-import Pack
+import board
+import pack
 import copy
 import time
 import getpos
 
 #奖励字典
-peacepoint={0:0,1:0,2:1,3:2,4:4}
-battlepoint={0:0,1:2,2:3,3:5,4:8}
+peacepoint = {0:0,1:0,2:1,3:2,4:4}
+battlepoint = {0:0,1:2,2:3,3:5,4:8}
 
 #先手玩家的编号是first，玩家2的编号是last
 #整个棋盘的坐标，从左下角开始为（0，0）
@@ -34,10 +34,8 @@ class game:
         self.state="gaming"
         self.time1=limit
         self.time2=limit
-        board=Board.board()
-        pack=Pack.pack()
-        self.board=board
-        self.pack=pack
+        self.board=board.Board()
+        self.pack=pack.Pack()
         self.winner=-1
         self.combo1=0
         self.combo2=0
@@ -75,7 +73,7 @@ self.player.append(playerlast(0))""".format(teamlast))
     #self.timeleft
     #self.position
     
-    #定义每个回合都要进行的游戏            
+    #定义每个回合都要进行的游戏
     def turn(self):
         self.time+=1
         self.block=self.pack.pop()
@@ -87,7 +85,7 @@ self.player.append(playerlast(0))""".format(teamlast))
         self.boardsave=copy.deepcopy(self.board)
         if n==1:
             self.timeleft=self.time1
-            self.position=getpos.getpos(self.block,self.board.list,3)
+            self.position=getpos.GetValidPos(self.block,self.board.list,3)
             T1=time.time()
             try:
                 act=self.player[0].output(self)
@@ -101,7 +99,7 @@ self.player.append(playerlast(0))""".format(teamlast))
                 act=[]
             else:
                 self.time1-=T2-T1
-            #是否溢出判定    
+            #是否溢出判定
             if act and self.board.checkit(self.block,act[2],act[1]):
                 print("p1 ai overflow")
                 self.winner=0
@@ -124,7 +122,7 @@ self.player.append(playerlast(0))""".format(teamlast))
         else:
             self.timeleft=self.time2
             self.board.list.reverse()
-            self.position=getpos.getpos(self.block,self.board.list,3)
+            self.position=getpos.GetValidPos(self.block,self.board.list,3)
             T1=time.time()
             try:
                 act=self.player[1].output(self)
@@ -159,8 +157,7 @@ self.player.append(playerlast(0))""".format(teamlast))
                 self.combo2=0
             self.point2+=battlepoint[battleline]+peacepoint[peaceline]+10*empty+self.combo2
             self.board.list.reverse()
-        a=self.board.list
-
+                
     #游戏结束的广播
     def end(self):
         print("本局游戏结束")
@@ -178,7 +175,7 @@ self.player.append(playerlast(0))""".format(teamlast))
                     self.winner="平局"
         print("胜者是",self.winner)
         print("游戏结束原因是",self.state)
-        
+
 
 if __name__ == "__main__":
     play=game("file1","file2",100)

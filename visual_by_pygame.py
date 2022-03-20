@@ -7,7 +7,7 @@ os.chdir(sys.path[0])
 
 pygame.init()
 
-GRID_WIDTH = 20    #单个格子边长
+GRID_WIDTH = 30    #单个格子边长
 GRID_NUM_WIDTH = 25    #格子总数（水平方向）
 GRID_NUM_HEIGHT = 10    #格子总数（竖直方向）
 WIDTH, HEIGHT = GRID_WIDTH * GRID_NUM_WIDTH, GRID_WIDTH * GRID_NUM_HEIGHT    #全部格子宽度与高度（屏幕总高）
@@ -65,7 +65,7 @@ class Wall():
             pygame.draw.line(screen, LINE_COLOR, (i * GRID_WIDTH, 0), (i * GRID_WIDTH, HEIGHT))
 
         #标明战斗区域
-        pygame.draw.rect(screen, FIGHT_LINE_COLOR, (11 * GRID_WIDTH, 0, 5 * GRID_WIDTH, 10 * GRID_WIDTH), 3)
+        pygame.draw.rect(screen, FIGHT_LINE_COLOR, (10 * GRID_WIDTH, 0, 5 * GRID_WIDTH, 10 * GRID_WIDTH), 3)
 
         #绘制横线
         for i in range(GRID_NUM_HEIGHT):

@@ -3,9 +3,9 @@ class player:
     def __init__(self,n):
         pass
     
-    def output(self,n):
+    def output(self,data):
         a=[]
-        pospos=n.position
+        pospos=data.GetPosition
         for x in range(10):
             if a:
                 break

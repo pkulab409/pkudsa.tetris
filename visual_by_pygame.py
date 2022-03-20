@@ -2,6 +2,7 @@ import pygame
 import sys
 import os
 import main
+import time
 
 os.chdir(sys.path[0])
 
@@ -40,7 +41,7 @@ pygame.display.set_caption("方块大战————pygame可视化调试界面"
 
 #设置速度
 clock = pygame.time.Clock()
-FPS = 3
+FPS = 5
 
 running = True
 gameover = False
@@ -159,29 +160,31 @@ hw = HouseWorker()
 play = main.game('file1','file2',100)
 
 while play.state == 'gaming':
-    play.turn()
-    screen_color_matrix = play.board.list
+
     pygame.display.update()
     clock.tick(FPS)
 
     #调试者操作
     for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN and pause == False:
-                if event.key == pygame.K_ESCAPE:    #结束调试
-                    pygame.quit()
-                    sys.exit()
-                elif event.key == pygame.K_p:    #暂停调试开关
-                    if not pause:
-                        hw.pause()
-                    else:
-                        pause = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:    #结束调试
+                pygame.quit()
+                sys.exit()
+            elif event.key == pygame.K_p:    #暂停调试开关
+                if not pause:
+                    hw.pause()
+                else:
+                    pause = False
 
     # 暂停时的事件循环
     if pause:
         hw.whenPause()
         continue
 
+    play.turn()
+    screen_color_matrix = play.board.list
+    now_cube = Brick(play.block - 1)
+    time.sleep(0.1)
+    
     # 正常时的事件循环
     w.drawAll()

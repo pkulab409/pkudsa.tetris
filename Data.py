@@ -65,7 +65,6 @@ class Data:
         return phaseboard
 
     def GetVaildPos(self, layers = 3):    #返回针对当前块的可能位置
-        print('hhhh')
         return self.GetAllValidPos(self.block, self.board, layers = layers)
 
     def GetCurrentRound(self):    #返回当前回合数

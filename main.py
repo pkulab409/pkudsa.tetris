@@ -1,6 +1,5 @@
 import Board
 import Pack
-import copy
 import time
 import Data
 

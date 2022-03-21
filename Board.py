@@ -19,6 +19,7 @@ class Board:
             if 0 not in part2[i]:
                 line2 += 1
                 del part2[i]
+<<<<<<< HEAD
                 part2 = [[0 for j in range(10)]] + part2
                 i += 1
             i -= 1
@@ -26,6 +27,16 @@ class Board:
             del part2[-1]
             part2 = [[0 for j in range(10)]] + part2
         if part2 == [[0 for i in range(10)]for i in range(5)]:
+=======
+                part2=[[0 for j in range(10)]]+part2
+                i+=1
+            i-=1
+        for i in range(5):
+            if part2[-1]==[0 for i in range(10)] and line2:
+                del part2[-1]
+                part2=[[0 for j in range(10)]]+part2
+        if part2==[[0 for i in range(10)]for i in range(5)]:
+>>>>>>> daa36cc3016d6bcb5a68856f1ed5e313a70f0a77
             empty=1
         i=9
         while i>=0:

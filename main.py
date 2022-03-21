@@ -71,17 +71,19 @@ self.player.append(playerlast(False))""".format(teamlast))
     #定义每个回合都要进行的游戏
     def turn(self):
         self.time += 1
-        self.block = self.pack.pop()
-        self.updateData()
 
         if self.time > 560:
             self.state = "round limit"    #达到回合数上限
 
+        self.block = self.pack.pop()    #取出下一块
+
         #调用output方法返回一个列表
         #监督对于时间的使用和是否返回报错
         act = []
-        if self.time%2 == 1:
-            self.data.isFirst = True
+        if self.time%2 == 1:    #先手玩家操作
+            self.data.isFirst = True            
+            self.updateData()
+
             T1 = time.time()
             try:
                 act = self.player[0].output(self.data)          
@@ -90,6 +92,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.state = 'p1 error'
                 self.winner = 0  
             T2 = time.time()
+
             #时间判定
             if self.time1 < T2-T1:
                 print("p1 ai overtime")
@@ -97,6 +100,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.winner = 0
             else:
                 self.time1 -= T2-T1
+
             #合法性判定
             if act:
                 if self.data.GetAllValidPos(self.block,self.board.list,layers = 3)[act[0]][act[1]][act[2]]:
@@ -108,23 +112,22 @@ self.player.append(playerlast(False))""".format(teamlast))
                         print("p1 ai illegal")
                         self.state = "judge to end"
                         self.winner = 0
+
             #清理满行
             peaceline,battleline,empty = self.board.erase()
+
             #计算分数
             if battleline:
                 self.combo1 += 1
             else:
                 self.combo1 = 0
             self.point1 += battlepoint[battleline] + peacepoint[peaceline] + 10*empty + self.combo1
-        else:
-            self.data.isFirst = False
 
-            #后手玩家的翻转棋盘
-            reversed_board = copy.deepcopy(self.board.list)
-            for row in reversed_board:
-                row.reverse()
-            reversed_board.reverse()
-            self.data.board = reversed_board
+
+        else:    #后手玩家操作
+            self.data.isFirst = False            
+            self.board.reverse()    #后手玩家需要翻转棋盘
+            self.updateData()
 
             T1 = time.time()
             try:
@@ -134,6 +137,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.state = 'p2 error'
                 self.winner = 1
             T2 = time.time()
+
             #时间判定
             if self.time2 < T2-T1:
                 print("p2 ai overtime")
@@ -141,25 +145,33 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.winner = 1
             else:
                 self.time2 -= T2-T1
+
             #合法性判定            
             if act:
-                if self.data.GetAllValidPos(self.block,reversed_board,layers = 3)[act[0]][act[1]][act[2]]:
+                if self.data.GetAllValidPos(self.block,self.board.list,layers = 3)[act[0]][act[1]][act[2]]:
                     self.board.writein(act[0],act[1],act[2],self.block)
                 else:
-                    if self.data.GetAllValidPos(self.block,reversed_board,layers = 10)[act[0]][act[1]][act[2]]:
+                    if self.data.GetAllValidPos(self.block,self.board.list,layers = 10)[act[0]][act[1]][act[2]]:
                         self.board.writein(act[0],act[1],act[2],self.block)
                     else:
                         print("p2 ai illegal")
                         self.state = "judge to end"
                         self.winner = 1
+
             #清理满行
             peaceline,battleline,empty = self.board.erase()
+
             #计算分数
             if battleline:
                 self.combo2 += 1
             else:
                 self.combo2 = 0
             self.point2 += battlepoint[battleline] + peacepoint[peaceline] + 10*empty + self.combo2
+
+            #把棋盘翻转回去
+            self.board.reverse()
+
+
     #游戏结束的广播
     def end(self):
         print("本局游戏结束")

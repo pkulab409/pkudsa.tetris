@@ -157,9 +157,9 @@ w =  Wall()
 hw = HouseWorker()
 
 #创建一场比赛
-play = main.game('file1','file2',100)
+agame = main.Game('file1','file2',100)
 
-while play.state == 'gaming':
+while agame.state == 'gaming':
 
     pygame.display.update()
     clock.tick(FPS)
@@ -181,9 +181,9 @@ while play.state == 'gaming':
         hw.whenPause()
         continue
 
-    play.turn()
-    screen_color_matrix = play.board.list
-    now_cube = Brick(play.block - 1)
+    agame.turn()
+    screen_color_matrix = agame.board.list
+    now_cube = Brick(agame.block - 1)
     time.sleep(0.1)
     
     # 正常时的事件循环

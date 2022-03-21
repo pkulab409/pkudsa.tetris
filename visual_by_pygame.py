@@ -50,6 +50,11 @@ pause = False
 pause_count = 0    # 暂停时的计数，用于展示闪动的屏幕
 
 
+#玩家分数
+point1 = 0
+point2 = 0
+
+
 class Wall():
     global GRID_NUM_WIDTH
     global LINE_COLOR
@@ -58,6 +63,7 @@ class Wall():
 
     def __init__(self):
         pass
+
 
     def draw_grids(self):    #绘制场地
 
@@ -91,25 +97,35 @@ class Wall():
         textRectObj = textSurfaceObj.get_rect()
         textRectObj.center = (x, y)
         screen.blit(textSurfaceObj, textRectObj)
-
-    def showPause(self):
-        GREEN = (0, 255, 0)
-        BLUE = (0, 0, 128)
-        self.show_text(u'暂停调试', 40, SCREEN_WIDTH//2, HEIGHT//2, BLUE, GREEN)
+        
 
     def drawNowBrick(self):
         global now_cube
         if now_cube is not None:
             now_cube.drawNow()
 
+    def drawscores(self):
+        global point1
+        global point2
+        self.show_text(f'play1(左)的分数是{point1}', 15, WIDTH + 80, HEIGHT - 80, WHITE)
+        self.show_text(f'play2(右)的分数是{point2}', 15, WIDTH + 80, HEIGHT - 60, WHITE)
 
     def drawAll(self):    #update界面
+        global pause
+
         screen.fill(BLACK)
         self.draw_grids()
         self.draw_matrix()
         self.drawNowBrick()
+        self.drawscores()
 
-        self.show_text(u'我要暂停:P', 13, WIDTH + 100, HEIGHT - 30, WHITE)
+        if pause:
+            self.show_text(u'按P键继续', 13, WIDTH + 100, HEIGHT - 35, WHITE)
+            self.show_text(u'暂停调试', 40, WIDTH + 100, HEIGHT//2 + 20, (0, 0, 128), (0, 255, 0))
+        else:
+            self.show_text(u'暂停请按 P', 13, WIDTH + 100, HEIGHT - 35, WHITE)
+        
+        self.show_text(u'按esc键退出', 13, WIDTH + 100, HEIGHT - 18, WHITE)
 
         if gameover:
             self.show_text(u'GAMEOVER', 13, SCREEN_WIDTH//2, HEIGHT//2, WHITE)
@@ -136,25 +152,7 @@ class Brick():
             pygame.draw.rect(screen, WHITE, (cube[1] * GRID_WIDTH+WIDTH + 100, cube[0] * GRID_WIDTH + 70, GRID_WIDTH, GRID_WIDTH), 2)
 
 
-# 调试者
-class HouseWorker():
-
-    # 暂停操作
-    def pause(self):
-        global pause
-        pause = True
-    def whenPause(self):
-        global pause_count
-
-        pause_count += 1
-        if pause_count % FPS > 10 and pause_count % FPS < 20:
-            w.drawAll()
-        else:
-            w.showPause()
-
-
 w =  Wall()
-hw = HouseWorker()
 
 #创建一场比赛
 agame = main.Game('file1','file2',100)
@@ -172,19 +170,16 @@ while agame.state == 'gaming':
                 sys.exit()
             elif event.key == pygame.K_p:    #暂停调试开关
                 if not pause:
-                    hw.pause()
+                    pause = True
                 else:
                     pause = False
-
-    # 暂停时的事件循环
-    if pause:
-        hw.whenPause()
-        continue
-
-    agame.turn()
-    screen_color_matrix = agame.board.list
-    now_cube = Brick(agame.block - 1)
-    time.sleep(0.1)
     
-    # 正常时的事件循环
+    if not pause:
+        agame.turn()
+        screen_color_matrix = agame.board.list
+        now_cube = Brick(agame.block - 1)
+        point1 = agame.point1
+        point2 = agame.point2
+        time.sleep(0.1)
+    
     w.drawAll()

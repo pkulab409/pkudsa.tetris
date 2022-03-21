@@ -1,5 +1,6 @@
 """This is data module"""
 
+<<<<<<< HEAD
 import Block
 import copy
 
@@ -97,3 +98,17 @@ class Data:
             return self.time1
         else:
             return self.time2
+=======
+import getpos
+
+class data:
+    def __init__(self):
+        self.GetTime=None
+        self.GetBoard=None
+        self.GetPack=None
+        self.GetBlock=None
+        self.GetPosition=None
+        
+    def GetPositionAll(self,type,field,layer):
+        return getpos.getpos(type,field,layer)
+>>>>>>> daa36cc3016d6bcb5a68856f1ed5e313a70f0a77

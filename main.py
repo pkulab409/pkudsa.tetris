@@ -99,10 +99,10 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.time1 -= T2-T1
             #合法性判定
             if act:
-                if self.data.GetAllValidPos(self.block,self.board.list,layers = 3)[act[1]][act[0]][act[2]]:
+                if self.data.GetAllValidPos(self.block,self.board.list,layers = 3)[act[0]][act[1]][act[2]]:
                     self.board.writein(act[0],act[1],act[2],self.block)
                 else:
-                    if self.data.GetAllValidPos(self.block,self.board.list,layers = 10)[act[1]][act[0]][act[2]]:
+                    if self.data.GetAllValidPos(self.block,self.board.list,layers = 10)[act[0]][act[1]][act[2]]:
                         self.board.writein(act[0],act[1],act[2],self.block)
                     else:
                         print("p1 ai illegal")
@@ -143,10 +143,10 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.time2 -= T2-T1
             #合法性判定            
             if act:
-                if self.data.GetAllValidPos(self.block,reversed_board,layers = 3)[act[1]][act[0]][act[2]]:
+                if self.data.GetAllValidPos(self.block,reversed_board,layers = 3)[act[0]][act[1]][act[2]]:
                     self.board.writein(act[0],act[1],act[2],self.block)
                 else:
-                    if self.data.GetAllValidPos(self.block,reversed_board,layers = 10)[act[1]][act[0]][act[2]]:
+                    if self.data.GetAllValidPos(self.block,reversed_board,layers = 10)[act[0]][act[1]][act[2]]:
                         self.board.writein(act[0],act[1],act[2],self.block)
                     else:
                         print("p2 ai illegal")

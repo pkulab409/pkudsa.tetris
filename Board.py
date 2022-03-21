@@ -44,3 +44,8 @@ class Board:
         for x,y in test.showblock():
             if y>=0:
                 self.list[y][x]=type
+
+    def reverse(self):
+        for row in self.list:
+                row.reverse()
+        self.list.reverse()

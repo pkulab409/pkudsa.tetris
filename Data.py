@@ -69,7 +69,7 @@ class Data:
         return self.GetAllValidPos(self.block, self.board, layers = layers)
 
     def GetCurrentRound(self):    #返回当前回合数
-        return self.time
+        return (self.time + 1)//2
 
     def GetBoard(self):    #返回当前棋盘,后手玩家会获得翻转棋盘
         return self.board

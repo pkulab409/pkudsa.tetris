@@ -5,7 +5,9 @@ class player:
         self.isFirst = isFirst
     
     def output(self,Data):
-        vaildpos = Data.GetAllValidPos(Data.block,Data.board)
+        nowboard = Data.GetBoard()
+        nowblock = Data.GetBlock()
+        vaildpos = Data.GetAllValidPos(nowblock,nowboard)
         vaildact = []
         for i,row in zip(range(25),vaildpos):
             for k,column in zip(range(10),row):

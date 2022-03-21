@@ -38,10 +38,9 @@ class Board:
         self.list=part1+part2+part3
         return (line1,line2,empty)
         
-    def writein(self,x,y,direc,type):#在某个块生效时写入到面板里
+    def writein(self,y,x,direc,type):#在某个块生效时写入到面板里
         test=Block.Block(type,direc)
         test.move(x,y)
-        for i in test.showblock():
-            (x,y)=i
+        for x,y in test.showblock():
             if y>=0:
                 self.list[y][x]=type

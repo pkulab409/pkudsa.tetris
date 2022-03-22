@@ -2,6 +2,7 @@
 
 import Block
 import copy
+import CppAcceleration
 
 class Data:
     def __init__(self):
@@ -23,6 +24,9 @@ class Data:
                 return False
         return True
     
+    def GetAllValidPosCpp(type, field): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
+        return CppAcceleration.GetAllValidPositions(type, field)
+
     def GetAllValidPos(self, type, field, layers = 3):    #寻找所有可能位置,默认层数是3
         validboard=[[[1 for i in range(4)] for i in range(10)] for i in range(15)]
         test=Block.Block(type,0)

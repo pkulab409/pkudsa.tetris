@@ -41,7 +41,7 @@ pygame.display.set_caption("方块大战————pygame可视化调试界面"
 
 #设置速度
 clock = pygame.time.Clock()
-FPS = 5
+FPS = 20    #FPS越大速度越快！
 
 running = True
 gameover = False
@@ -180,7 +180,6 @@ while agame.state == 'gaming':
         now_cube = Brick(agame.block - 1)
         point1 = agame.point1
         point2 = agame.point2
-        time.sleep(0.1)
     
     w.drawAll()
 

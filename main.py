@@ -81,8 +81,8 @@ self.player.append(playerlast(False))""".format(teamlast))
         if self.time%2 == 1:    #先手玩家操作
 
             #p1 有效落块位置
-            validpos = self.data.GetAllValidPos(self.block,self.board.list,layers = 10)
-            if not self.data.HaveValidPos(validpos):    #p1 无路可走,溢出
+            validpos =Data.Data.GetAllValidPosCpp(self.block, self.board.list)
+            if len(validpos)==0:    #p1 无路可走,溢出
                 self.state = 'p1 overflow'
                 self.winner = 2
                 return None
@@ -110,7 +110,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.time1 -= T2-T1
 
             #合法性判定
-            if validpos[act[0]][act[1]][act[2]]:
+            if act in validpos:
                 self.board.writein(act[0],act[1],act[2],self.block)
             else:    #p1 非法落块
                 print("p1 ai illegal")
@@ -134,8 +134,8 @@ self.player.append(playerlast(False))""".format(teamlast))
             self.board.reverse()    
 
             #p2 有效落块位置
-            validpos = self.data.GetAllValidPos(self.block,self.board.list,layers = 10)
-            if not self.data.HaveValidPos(validpos):    #p2 无路可走,溢出
+            validpos =Data.Data.GetAllValidPosCpp(self.block, self.board.list)
+            if len(validpos)==0:    #p2 无路可走,溢出
                 self.state = 'p2 overflow'
                 self.winner = 1
                 return None
@@ -164,7 +164,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.time2 -= T2-T1
 
             #合法性判定            
-            if validpos[act[0]][act[1]][act[2]]:
+            if act in validpos:
                 self.board.writein(act[0],act[1],act[2],self.block)
             else:
                 print("p2 ai illegal")

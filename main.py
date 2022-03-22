@@ -66,7 +66,7 @@ self.player.append(playerlast(False))""".format(teamlast))
         self.data.point2 = self.point2
         self.data.time = self.time
 
-    
+
     #定义每个回合都要进行的游戏
     def turn(self):
         self.time += 1
@@ -78,22 +78,30 @@ self.player.append(playerlast(False))""".format(teamlast))
 
         #调用output方法返回一个列表
         #监督对于时间的使用和是否返回报错
-        act = []
         if self.time%2 == 1:    #先手玩家操作
-            self.data.isFirst = True            
+
+            #p1 有效落块位置
+            validpos = self.data.GetAllValidPos(self.block,self.board.list,layers = 10)
+            if not self.data.HaveValidPos(validpos):    #p1 无路可走,溢出
+                self.state = 'p1 overflow'
+                return None
+
+            #更新资料包,准备发送给p1
+            self.data.isFirst = True
             self.updateData()
+
 
             T1 = time.time()
             try:
-                act = self.player[0].output(self.data)          
-            except Exception:
+                act = self.player[0].output(self.data)
+            except Exception:    #p1 程序出错
                 print("p1 ai error!")
                 self.state = 'p1 error'
-                self.winner = 0  
+                self.winner = 0
             T2 = time.time()
 
             #时间判定
-            if self.time1 < T2-T1:
+            if self.time1 < T2-T1:    #p1 超时
                 print("p1 ai overtime")
                 self.state = 'p1 overtime'
                 self.winner = 0
@@ -101,16 +109,12 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.time1 -= T2-T1
 
             #合法性判定
-            if act:
-                if self.data.GetAllValidPos(self.block,self.board.list,layers = 3)[act[0]][act[1]][act[2]]:
-                    self.board.writein(act[0],act[1],act[2],self.block)
-                else:
-                    if self.data.GetAllValidPos(self.block,self.board.list,layers = 10)[act[0]][act[1]][act[2]]:
-                        self.board.writein(act[0],act[1],act[2],self.block)
-                    else:
-                        print("p1 ai illegal")
-                        self.state = "judge to end"
-                        self.winner = 0
+            if validpos[act[0]][act[1]][act[2]]:
+                self.board.writein(act[0],act[1],act[2],self.block)
+            else:    #p1 非法落块
+                print("p1 ai illegal")
+                self.state = "judge to end"
+                self.winner = 0
 
             #清理满行
             peaceline,battleline,empty = self.board.erase()
@@ -124,21 +128,35 @@ self.player.append(playerlast(False))""".format(teamlast))
 
 
         else:    #后手玩家操作
-            self.data.isFirst = False            
-            self.board.reverse()    #后手玩家需要翻转棋盘
+
+            #后手玩家需要翻转棋盘
+            self.board.reverse()    
+
+            #p2 有效落块位置
+            validpos = self.data.GetAllValidPos(self.block,self.board.list,layers = 10)
+            if not self.data.HaveValidPos(validpos):    #p2 无路可走,溢出
+                self.state = 'p2 overflow'
+                return None
+
+            #更新资料包,准备发送给p2
+            self.data.isFirst = False
             self.updateData()
 
+
             T1 = time.time()
-            try:
-                act = self.player[1].output(self.data)
-            except Exception:
+#            try:
+            act = self.player[1].output(self.data)
+            '''
+            except Exception:    #p2 程序出错
                 print("p2 ai error!")
                 self.state = 'p2 error'
                 self.winner = 1
+            '''
             T2 = time.time()
+            
 
             #时间判定
-            if self.time2 < T2-T1:
+            if self.time2 < T2-T1:    #p2 超时
                 print("p2 ai overtime")
                 self.state = 'p2 overtime'
                 self.winner = 1
@@ -146,16 +164,12 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.time2 -= T2-T1
 
             #合法性判定            
-            if act:
-                if self.data.GetAllValidPos(self.block,self.board.list,layers = 3)[act[0]][act[1]][act[2]]:
-                    self.board.writein(act[0],act[1],act[2],self.block)
-                else:
-                    if self.data.GetAllValidPos(self.block,self.board.list,layers = 10)[act[0]][act[1]][act[2]]:
-                        self.board.writein(act[0],act[1],act[2],self.block)
-                    else:
-                        print("p2 ai illegal")
-                        self.state = "judge to end"
-                        self.winner = 1
+            if validpos[act[0]][act[1]][act[2]]:
+                self.board.writein(act[0],act[1],act[2],self.block)
+            else:
+                print("p2 ai illegal")
+                self.state = "judge to end"
+                self.winner = 1
 
             #清理满行
             peaceline,battleline,empty = self.board.erase()

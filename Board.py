@@ -47,5 +47,5 @@ class Board:
 
     def reverse(self):
         for row in self.list:
-                row.reverse()
+            row.reverse()
         self.list.reverse()

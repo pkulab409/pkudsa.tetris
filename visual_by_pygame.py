@@ -183,3 +183,5 @@ while agame.state == 'gaming':
         time.sleep(0.1)
     
     w.drawAll()
+
+agame.end()

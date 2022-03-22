@@ -84,7 +84,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             validpos = self.data.GetAllValidPos(self.block,self.board.list,layers = 10)
             if not self.data.HaveValidPos(validpos):    #p1 无路可走,溢出
                 self.state = 'p1 overflow'
-                self.winner = 0
+                self.winner = 2
                 return None
 
             #更新资料包,准备发送给p1

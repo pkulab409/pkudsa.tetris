@@ -40,7 +40,7 @@ class Game:
             exec("""from files.{} import player as playerfirst
 self.player.append(playerfirst(True))""".format(teamfirst))
         except:
-            self.winner = 0
+            self.winner = 2
             print("p1 ai missing")
             self.state = "judge to end"
         try:
@@ -98,14 +98,14 @@ self.player.append(playerlast(False))""".format(teamlast))
             except Exception:    #p1 程序出错
                 print("p1 ai error!")
                 self.state = 'p1 error'
-                self.winner = 0
+                self.winner = 2
             T2 = time.time()
 
             #时间判定
             if self.time1 < T2-T1:    #p1 超时
                 print("p1 ai overtime")
                 self.state = 'p1 overtime'
-                self.winner = 0
+                self.winner = 2
             else:
                 self.time1 -= T2-T1
 
@@ -115,7 +115,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             else:    #p1 非法落块
                 print("p1 ai illegal")
                 self.state = "judge to end"
-                self.winner = 0
+                self.winner = 2
 
             #清理满行
             peaceline,battleline,empty = self.board.erase()
@@ -146,14 +146,12 @@ self.player.append(playerlast(False))""".format(teamlast))
 
 
             T1 = time.time()
-#            try:
-            act = self.player[1].output(self.data)
-            '''
+            try:
+                act = self.player[1].output(self.data)
             except Exception:    #p2 程序出错
                 print("p2 ai error!")
                 self.state = 'p2 error'
                 self.winner = 1
-            '''
             T2 = time.time()
             
 
@@ -196,7 +194,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             elif self.point1 < self.point2:
                 self.winner = 2
             else:
-                self.winner="平局"
+                self.winner = "平局"
         print("胜者是",self.winner)
         print("游戏结束原因是",self.state)
         print(self.time)

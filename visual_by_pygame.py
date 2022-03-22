@@ -2,7 +2,6 @@ import pygame
 import sys
 import os
 import main
-import time
 
 os.chdir(sys.path[0])
 

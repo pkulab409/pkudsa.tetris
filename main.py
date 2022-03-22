@@ -84,6 +84,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             validpos = self.data.GetAllValidPos(self.block,self.board.list,layers = 10)
             if not self.data.HaveValidPos(validpos):    #p1 无路可走,溢出
                 self.state = 'p1 overflow'
+                self.winner = 0
                 return None
 
             #更新资料包,准备发送给p1
@@ -136,6 +137,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             validpos = self.data.GetAllValidPos(self.block,self.board.list,layers = 10)
             if not self.data.HaveValidPos(validpos):    #p2 无路可走,溢出
                 self.state = 'p2 overflow'
+                self.winner = 1
                 return None
 
             #更新资料包,准备发送给p2
@@ -188,18 +190,13 @@ self.player.append(playerlast(False))""".format(teamlast))
     #游戏结束的广播
     def end(self):
         print("本局游戏结束")
-        if self.winner==-1:
-            if self.point1>self.point2:
-                self.winner=1
-            elif self.point1<self.point2:
-                self.winner=2
+        if self.state == 'round limit':
+            if self.point1 > self.point2:
+                self.winner = 1
+            elif self.point1 < self.point2:
+                self.winner = 2
             else:
-                if self.time1>self.time2:
-                    self.winner=1
-                elif self.time1<self.time2:
-                    self.winner=2
-                else:
-                    self.winner="平局"
+                self.winner="平局"
         print("胜者是",self.winner)
         print("游戏结束原因是",self.state)
         print(self.time)

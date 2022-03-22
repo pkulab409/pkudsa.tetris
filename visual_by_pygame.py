@@ -20,13 +20,13 @@ BLACK = (0, 0, 0)
 LINE_COLOR = (0x33, 0x33, 0x33)
 FIGHT_LINE_COLOR = (0xff, 0xcc, 0x00)
 CUBE_COLORS = [
-    (0xcc, 0x99, 0x99), 
-    (0xff, 0xff, 0x99), 
-    (0x66, 0x66, 0x99),
-    (0x99, 0x00, 0x66), 
-    (0xff, 0x00, 0x33), 
+    (0x66, 0xcc, 0xff), 
+    (0x66, 0xff, 0xcc), 
+    (0xff, 0xcc, 0x66),
+    (0xff, 0x66, 0xcc), 
+    (0xcc, 0x66, 0xff), 
     (0xcc, 0xff, 0x66), 
-    (0xff, 0x99, 0x00)
+    (0xff, 0x66, 0x66)
 ]
 
 
@@ -40,7 +40,7 @@ pygame.display.set_caption("方块大战————pygame可视化调试界面"
 
 #设置速度
 clock = pygame.time.Clock()
-FPS = 20    #FPS越大速度越快！
+FPS = 10000    #FPS越大速度越快！
 
 running = True
 gameover = False
@@ -152,34 +152,41 @@ class Brick():
 
 
 w =  Wall()
-
+first=0
+last=0
 #创建一场比赛
-agame = main.Game('file1','file2',100)
+for i in range(100):
+    agame = main.Game('file1','file2',100)
 
-while agame.state == 'gaming':
+    while agame.state == 'gaming':
 
-    pygame.display.update()
-    clock.tick(FPS)
+        pygame.display.update()
+        clock.tick(FPS)
 
-    #调试者操作
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:    #结束调试
-                pygame.quit()
-                sys.exit()
-            elif event.key == pygame.K_p:    #暂停调试开关
-                if not pause:
-                    pause = True
-                else:
-                    pause = False
-    
-    if not pause:
-        agame.turn()
-        screen_color_matrix = agame.board.list
-        now_cube = Brick(agame.block - 1)
-        point1 = agame.point1
-        point2 = agame.point2
-    
-    w.drawAll()
+        #调试者操作
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:    #结束调试
+                    pygame.quit()
+                    sys.exit()
+                elif event.key == pygame.K_p:    #暂停调试开关
+                    if not pause:
+                        pause = True
+                    else:
+                        pause = False
+        
+        if not pause:
+            agame.turn()
+            screen_color_matrix = agame.board.list
+            now_cube = Brick(agame.block - 1)
+            point1 = agame.point1
+            point2 = agame.point2
+        
+        w.drawAll()
 
-agame.end()
+    agame.end()
+    if agame.winner==1:
+        first+=1
+    else:
+        last+=1
+    print(first,last)

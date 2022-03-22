@@ -7,12 +7,12 @@ class player:
     def output(self,Data):
         nowboard = Data.GetBoard()
         nowblock = Data.GetBlock()
-        vaildpos = Data.GetAllValidPos(nowblock,nowboard)
-        vaildact = []
-        for i,row in zip(range(25),vaildpos):
+        validpos = Data.GetAllValidPos(nowblock,nowboard)
+        validact = []
+        for i,row in zip(range(25),validpos):
             for k,column in zip(range(10),row):
-                for atype,valid in zip(range(4),column):
-                    if valid:
-                        vaildact.append([i,k,atype])
+                for atype,vaild in zip(range(4),column):
+                    if vaild:
+                        validact.append([i,k,atype])
 
-        return random.choice(vaildact)
+        return random.choice(validact)

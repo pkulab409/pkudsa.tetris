@@ -11,8 +11,8 @@ battlepoint = {0:0,1:2,2:3,3:5,4:8}
 #七种方块的种类和角度按照规则文档提供，编号1~7
 #玩家需要实现一个ai类，ai类有两个方法：
     #方法1：通过接受bool表示的是否先攻创建实例
-    #方法2：通过调取无变量函数"self.output()"给出列表：
-        #[x:int,y:int,position:int]
+    #方法2：通过调取无变量函数"self.output()"给出元组：
+        #(y:int,x:int,position:int)
 
 
 
@@ -166,7 +166,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             #合法性判定            
             if act in validpos:
                 self.board.writein(act[0],act[1],act[2],self.block)
-            else:
+            else:    #p2 非法落块
                 print("p2 ai illegal")
                 self.state = "judge to end"
                 self.winner = 1

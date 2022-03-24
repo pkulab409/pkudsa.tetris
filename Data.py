@@ -81,7 +81,7 @@ class Data:
         return self.GetAllValidPos(self.block, self.board, layers = layers)
 
     def GetValidPosCpp(self):
-        return Data.GetAllValidPosCpp(self.block, self.board)
+        return self.GetAllValidPosCpp(self.block, self.board)
 
     def GetCurrentRound(self):    #返回当前回合数
         return (self.time + 1)//2

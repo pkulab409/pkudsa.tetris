@@ -5,7 +5,7 @@ import Data
 
 #奖励字典
 peacepoint = {0:0,1:0,2:1,3:2,4:4}
-battlepoint = {0:0,1:2,2:3,3:5,4:8}
+battlepoint = {0:0,1:1,2:2,3:4,4:8}
 
 #棋盘属性
 PeaceAreaWidth = 10    #和平区行数

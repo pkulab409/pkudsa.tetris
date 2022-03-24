@@ -6,14 +6,18 @@ import Data
 #奖励字典
 peacepoint = {0:0,1:0,2:1,3:2,4:4}
 battlepoint = {0:0,1:2,2:3,3:5,4:8}
+
+#棋盘属性
+PeaceAreaWidth = 9    #和平区行数
+BattleAreaWidth = 7    #战斗区行数
+
 #先手玩家的编号是first，玩家2的编号是last
-#整个棋盘的坐标，从左下角开始为（0，0）
-#七种方块的种类和角度按照规则文档提供，编号1~7
+#棋盘的左上角为坐标原点(0,0)
+#七种方块的种类和角度按照规则文档提供,编号1~7
 #玩家需要实现一个ai类，ai类有两个方法：
     #方法1：通过接受bool表示的是否先攻创建实例
     #方法2：通过调取无变量函数"self.output()"给出元组：
         #(y:int,x:int,position:int)
-
 
 
 class Game:
@@ -26,15 +30,16 @@ class Game:
         self.state = "gaming"
         self.time1 = limit    #玩家1剩余时间
         self.time2 = limit    #玩家2剩余时间
-        self.board = Board.Board()    #棋盘
+        self.board = Board.Board(PeaceAreaWidth, BattleAreaWidth)    #棋盘
         self.pack = Pack.Pack()    #全部块数
         self.winner = -1
-        self.combo1 = 0
-        self.combo2 = 0
+        self.combo = 0
+        self.removeline = False     #用于战斗区连击判定
         self.point1 = 0    #玩家1得分
         self.point2 = 0    #玩家2得分
         self.player = []
-        self.time = 0    #游戏进行轮次
+        self.time = 0    #游戏进行轮次(并非回合数!!!)
+
         #读入玩家程序,读不到判负
         try:
             exec("""from files.{} import player as playerfirst
@@ -55,6 +60,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.state = "judge to end"
                 print("p2 ai missing")
     
+
     #同步用户可调用数据
     def updateData(self):
         self.data.block = self.block
@@ -65,6 +71,7 @@ self.player.append(playerlast(False))""".format(teamlast))
         self.data.point1 = self.point1
         self.data.point2 = self.point2
         self.data.time = self.time
+        self.data.combo = self.combo
 
 
     #定义每个回合都要进行的游戏
@@ -118,14 +125,14 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.winner = 2
 
             #清理满行
-            peaceline,battleline,empty = self.board.erase()
+            peaceline, battleline, empty = self.board.erase()
 
             #计算分数
             if battleline:
-                self.combo1 += 1
+                self.removeline = True
+                self.point1 += battlepoint[battleline] + peacepoint[peaceline] +  self.combo
             else:
-                self.combo1 = 0
-            self.point1 += battlepoint[battleline] + peacepoint[peaceline] + 10*empty + self.combo1
+                self.point1 += peacepoint[peaceline]
 
 
         else:    #后手玩家操作
@@ -172,17 +179,24 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.winner = 1
 
             #清理满行
-            peaceline,battleline,empty = self.board.erase()
+            peaceline, battleline, empty = self.board.erase()
 
             #计算分数
             if battleline:
-                self.combo2 += 1
+                self.removeline = True
+                self.point2 += battlepoint[battleline] + peacepoint[peaceline] +  self.combo
             else:
-                self.combo2 = 0
-            self.point2 += battlepoint[battleline] + peacepoint[peaceline] + 10*empty + self.combo2
+                self.point2 += peacepoint[peaceline]
 
             #把棋盘翻转回去
             self.board.reverse()
+
+            #连击结算
+            if self.removeline:
+                self.combo += 1
+            else:
+                self.combo = 0
+            self.removeline = False
 
 
     #游戏结束的广播

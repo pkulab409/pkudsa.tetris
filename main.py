@@ -8,8 +8,8 @@ peacepoint = {0:0,1:0,2:1,3:2,4:4}
 battlepoint = {0:0,1:2,2:3,3:5,4:8}
 
 #棋盘属性
-PeaceAreaWidth = 9    #和平区行数
-BattleAreaWidth = 7    #战斗区行数
+PeaceAreaWidth = 10    #和平区行数
+BattleAreaWidth = 5    #战斗区行数
 
 #先手玩家的编号是first，玩家2的编号是last
 #棋盘的左上角为坐标原点(0,0)
@@ -88,7 +88,7 @@ self.player.append(playerlast(False))""".format(teamlast))
         if self.time%2 == 1:    #先手玩家操作
 
             #p1 有效落块位置
-            validpos =Data.Data.GetAllValidPosCpp(self.block, self.board.list)
+            validpos = self.data.GetAllValidPosCpp(self.block, self.board.list)
             if len(validpos)==0:    #p1 无路可走,溢出
                 self.state = 'p1 overflow'
                 self.winner = 2
@@ -106,6 +106,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 print("p1 ai error!")
                 self.state = 'p1 error'
                 self.winner = 2
+                return None
             T2 = time.time()
 
             #时间判定
@@ -123,6 +124,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 print("p1 ai illegal")
                 self.state = "judge to end"
                 self.winner = 2
+                return None
 
             #清理满行
             peaceline, battleline, empty = self.board.erase()
@@ -141,7 +143,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             self.board.reverse()    
 
             #p2 有效落块位置
-            validpos =Data.Data.GetAllValidPosCpp(self.block, self.board.list)
+            validpos = self.data.GetAllValidPosCpp(self.block, self.board.list)
             if len(validpos)==0:    #p2 无路可走,溢出
                 self.state = 'p2 overflow'
                 self.winner = 1
@@ -159,6 +161,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 print("p2 ai error!")
                 self.state = 'p2 error'
                 self.winner = 1
+                return None
             T2 = time.time()
             
 
@@ -177,6 +180,7 @@ self.player.append(playerlast(False))""".format(teamlast))
                 print("p2 ai illegal")
                 self.state = "judge to end"
                 self.winner = 1
+                return None
 
             #清理满行
             peaceline, battleline, empty = self.board.erase()

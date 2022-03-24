@@ -1,6 +1,4 @@
 import random
-import Data
-
 
 class player:
     def __init__(self, isFirst):
@@ -9,5 +7,5 @@ class player:
     def output(self, data):
         nowboard = data.GetBoard()
         nowblock = data.GetBlock()
-        vaildpos = Data.Data.GetAllValidPosCpp(nowblock, nowboard)
+        vaildpos = data.GetAllValidPosCpp(nowblock, nowboard)
         return random.choice(vaildpos)

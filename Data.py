@@ -15,6 +15,7 @@ class Data:
         self.time2 = None
         self.point1 = None
         self.point2 = None
+        self.combo = None
 
     def judge(self,pos,field):#判定位置是否碰撞
         for x,y in pos:
@@ -99,6 +100,9 @@ class Data:
             return self.point1
         else:
             return self.point2
+    
+    def GetCombo(self):    #返回连击数
+        return self.combo
 
     def ViewOpponentPoint(self):    #查看对手的分数
         if self.isFirst:

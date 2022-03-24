@@ -25,7 +25,7 @@ class Data:
                 return False
         return True
     
-    def GetAllValidPosCpp(type, field): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
+    def GetAllValidPosCpp(self, type, field): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
         return CppAcceleration.GetAllValidPositions(type, field)
 
     def GetAllValidPos(self, type, field, layers = 3):    #寻找所有可能位置,默认层数是3

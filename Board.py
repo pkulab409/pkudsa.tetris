@@ -6,7 +6,7 @@ class Board:
         self.list=[[0 for i in range(10)] for i in range(25)]
         self.PeaceAreaWidth = PeaceAreaWidth
         self.BattleAreaWidth = BattleAreaWidth
-        
+
     def erase(self):    #定义消去行的操作
         mode = False    #True 为和平区方块不会掉入战争区 ; False 则相反
 
@@ -60,7 +60,7 @@ class Board:
             self.list = part1 + part2
             if line2 == self.BattleAreaWidth:
                 empty = True
-        
+
         return (line1,line2,empty)
 
 

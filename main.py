@@ -2,6 +2,7 @@ import Board
 import Pack
 import time
 import Data
+import copy
 
 #奖励字典
 peacepoint = {0:0,1:0,2:1,3:2,4:4}
@@ -66,7 +67,7 @@ self.player.append(playerlast(False))""".format(teamlast))
         self.data.block = self.block
         self.data.time1 = self.time1
         self.data.time2 = self.time2
-        self.data.board = self.board.list
+        self.data.board = copy.deepcopy(self.board.list)
         self.data.pack = self.pack
         self.data.point1 = self.point1
         self.data.point2 = self.point2

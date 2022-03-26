@@ -5,7 +5,7 @@ class player:
         self.isFirst = isFirst
 
     def output(self, data):
-        nowboard = data.GetBoard()
-        nowblock = data.GetBlock()
-        vaildpos = data.GetAllValidPosCpp(nowblock, nowboard)
+        nowboard = data.getBoard()
+        nowblock = data.getBlock()
+        vaildpos = data.getAllValidActCpp(nowblock, nowboard)
         return random.choice(vaildpos)

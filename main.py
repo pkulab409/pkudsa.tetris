@@ -89,7 +89,7 @@ self.player.append(playerlast(False))""".format(teamlast))
         if self.time % 2 == 1:  # 先手玩家操作
 
             # p1 有效落块位置
-            validpos = self.data.GetAllValidPosCpp(self.block, self.board.list)
+            validpos = self.data.getAllValidActCpp(self.block, self.board.list)
             if len(validpos) == 0:  # p1 无路可走,溢出
                 self.state = 'p1 overflow'
                 self.winner = 2
@@ -143,7 +143,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             self.board.reverse()
 
             # p2 有效落块位置
-            validpos = self.data.GetAllValidPosCpp(self.block, self.board.list)
+            validpos = self.data.getAllValidActCpp(self.block, self.board.list)
             if len(validpos) == 0:  # p2 无路可走,溢出
                 self.state = 'p2 overflow'
                 self.winner = 1

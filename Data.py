@@ -8,7 +8,7 @@ class Data:
     def __init__(self):
         self.isFirst = None
         self.time = None
-        self.board = None    #Data类中的board属性是list type,不是我们定义的Board类
+        self.board = None    #Data类中的board属性是一个二维数组,而不是我们定义的Board类
         self.pack = None
         self.block = None
         self.time1 = None

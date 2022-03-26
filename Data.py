@@ -93,7 +93,7 @@ class Data:
         return self.block
     
     def GetBlockList(self):    #返回剩余的未下落块
-        return self.pack
+        return self.pack.list
 
     def ViewMyPoint(self):    #查看自己的分数
         if self.isFirst:
@@ -115,3 +115,12 @@ class Data:
             return self.time1
         else:
             return self.time2
+
+    def PutBlock(self,block,act,board):
+        block = Block.Block(block,act[2])
+        block.y = act[0]
+        block.x = act[1]
+        for x , y in block.showblock():
+            board[y][x] = block
+        return board
+        

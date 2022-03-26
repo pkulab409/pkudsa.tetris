@@ -59,7 +59,7 @@ class Block:
     def move(self, x, y):  # 定义移动操作
         self.y = y
         self.x = x
-
+    
     def showblock(self):  # 定义返回各方块位置操作
         offsets = Block.offsetTable[self.type][self.direc]
         return [

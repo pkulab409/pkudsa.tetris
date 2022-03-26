@@ -7,8 +7,13 @@ os.chdir(sys.path[0])
 
 pygame.init()
 
+# 创建一场比赛
+agame = main.Game('file1', 'file2', 100)
+PeaceAreaWidth = agame.board.PeaceAreaWidth  # 和平区行数
+BattleAreaWidth = agame.board.BattleAreaWidth  # 战斗区行数
+
 GRID_WIDTH = 30  # 单个格子边长
-GRID_NUM_WIDTH = 25  # 格子总数（水平方向）
+GRID_NUM_WIDTH = PeaceAreaWidth*2 + BattleAreaWidth  # 格子总数（水平方向）
 GRID_NUM_HEIGHT = 10  # 格子总数（竖直方向）
 WIDTH, HEIGHT = GRID_WIDTH * GRID_NUM_WIDTH, GRID_WIDTH * \
     GRID_NUM_HEIGHT  # 全部格子宽度与高度（屏幕总高）
@@ -41,7 +46,7 @@ pygame.display.set_caption("方块大战————pygame可视化调试界面"
 
 # 设置速度
 clock = pygame.time.Clock()
-FPS = 10  # FPS越大速度越快！
+FPS = 30  # FPS越大速度越快！
 
 running = True
 gameover = False
@@ -53,6 +58,7 @@ pause_count = 0    # 暂停时的计数，用于展示闪动的屏幕
 # 玩家分数
 point1 = 0
 point2 = 0
+combo = 0
 
 
 class Wall():
@@ -65,6 +71,8 @@ class Wall():
         pass
 
     def draw_grids(self):  # 绘制场地
+        global PeaceAreaWidth
+        global BattleAreaWidth
 
         # 绘制竖线
         for i in range(GRID_NUM_WIDTH + 1):
@@ -72,8 +80,8 @@ class Wall():
                              (i * GRID_WIDTH, 0), (i * GRID_WIDTH, HEIGHT))
 
         # 标明战斗区域
-        pygame.draw.rect(screen, FIGHT_LINE_COLOR, (10 *
-                         GRID_WIDTH, 0, 5 * GRID_WIDTH, 10 * GRID_WIDTH), 3)
+        pygame.draw.rect(screen, FIGHT_LINE_COLOR, (PeaceAreaWidth *
+                         GRID_WIDTH, 0, BattleAreaWidth * GRID_WIDTH, 10 * GRID_WIDTH), 3)
 
         # 绘制横线
         for i in range(GRID_NUM_HEIGHT):
@@ -108,24 +116,27 @@ class Wall():
     def drawscores(self):
         global point1
         global point2
+        global combo
         self.show_text(f'play1(左)的分数是{point1}',
-                       15, WIDTH + 80, HEIGHT - 80, WHITE)
+                       15, WIDTH + 100, HEIGHT - 80, WHITE)
         self.show_text(f'play2(右)的分数是{point2}',
-                       15, WIDTH + 80, HEIGHT - 60, WHITE)
+                       15, WIDTH + 100, HEIGHT - 60, WHITE)
+        self.show_text(f'战斗区连击次数:{combo}', 15,
+                       WIDTH + 100, HEIGHT - 100, WHITE)
 
     def drawAll(self):  # update界面
         global pause
 
         screen.fill(BLACK)
-        self.draw_grids()
         self.draw_matrix()
+        self.draw_grids()
         self.drawNowBrick()
         self.drawscores()
 
         if pause:
             self.show_text(u'按P键继续', 13, WIDTH + 100, HEIGHT - 35, WHITE)
-            self.show_text(u'暂停调试', 40, WIDTH + 100, HEIGHT //
-                           2 + 20, (0, 0, 128), (0, 255, 0))
+            self.show_text(u'暂停调试', 35, WIDTH + 100, HEIGHT //
+                           2 + 15, (0, 0, 128), (0, 255, 0))
         else:
             self.show_text(u'暂停请按 P', 13, WIDTH + 100, HEIGHT - 35, WHITE)
 
@@ -153,50 +164,39 @@ class Brick():
     def drawNow(self):
         for cube in self.SHAPES_WITH_DIR[self.shape]:
             pygame.draw.rect(screen, self.color, (
-                cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 70, GRID_WIDTH, GRID_WIDTH))
-            pygame.draw.rect(screen, WHITE, (cube[1] * GRID_WIDTH+WIDTH +
-                             100, cube[0] * GRID_WIDTH + 70, GRID_WIDTH, GRID_WIDTH), 2)
+                cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH))
+            pygame.draw.rect(screen, WHITE, (cube[1] * GRID_WIDTH + WIDTH +
+                             100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH), 2)
 
 
+# 绘制场地并开始比赛
 w = Wall()
-first = 0
-last = 0
-# 创建一场比赛
-# for i in range(100):
-# AlphaTetris_v5: average: 180
-winnerPoint = 0
-for s in range(500):
-    agame = main.Game('AlphaTetris_v6', 'AlphaTetris_v6', 1000)
-    while agame.state == 'gaming':
-        pygame.display.update()
-        clock.tick(FPS)
+while agame.state == 'gaming':
 
-        # 调试者操作
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:  # 结束调试
-                    pygame.quit()
-                    sys.exit()
-                elif event.key == pygame.K_p:  # 暂停调试开关
-                    if not pause:
-                        pause = True
-                    else:
-                        pause = False
+    pygame.display.update()
+    clock.tick(FPS)
 
-        if not pause:
-            agame.turn()
-            screen_color_matrix = agame.board.list
-            now_cube = Brick(agame.block - 1)
-            point1 = agame.point1
-            point2 = agame.point2
+    # 调试者操作
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:  # 结束调试
+                pygame.quit()
+                sys.exit()
+            elif event.key == pygame.K_p:  # 暂停调试开关
+                if not pause:
+                    pause = True
+                else:
+                    pause = False
 
-        w.drawAll()
+    if not pause:
+        agame.turn()
+        screen_color_matrix = agame.board.list
+        now_cube = Brick(agame.block - 1)
+        point1 = agame.point1
+        point2 = agame.point2
+        combo = agame.combo
 
-    agame.end()
-    if agame.winner == 1:
-        first += 1
-        winnerPoint += agame.point1
-    elif agame.winner == 2:
-        last += 1
-        winnerPoint += agame.point2
-    print(last/(first+last), winnerPoint/(s+1))
+    w.drawAll()
+
+# 游戏结束广播
+agame.end()

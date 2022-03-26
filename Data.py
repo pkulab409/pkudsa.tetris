@@ -9,13 +9,14 @@ class Data:
     def __init__(self):
         self.isFirst = None
         self.time = None
-        self.board = None  # Data类中的board属性是list type,不是我们定义的Board类
+        self.board = None    #Data类中的board属性是一个二维数组,而不是我们定义的Board类
         self.pack = None
         self.block = None
         self.time1 = None
         self.time2 = None
         self.point1 = None
         self.point2 = None
+        self.combo = None
 
     def judge(self, pos, field):  # 判定位置是否碰撞
         for x, y in pos:
@@ -24,8 +25,8 @@ class Data:
             elif y >= 0 and field[y][x] != 0:
                 return False
         return True
-
-    def GetAllValidPosCpp(type, field):  # 返回值是允许的位置的三元组 (y, x, pos) 的列表
+    
+    def GetAllValidPosCpp(self, type, field): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
         return CppAcceleration.GetAllValidPositions(type, field)
 
     def GetAllValidPos(self, type, field, layers=3):  # 寻找所有可能位置,默认层数是3
@@ -84,7 +85,7 @@ class Data:
         return self.GetAllValidPos(self.block, self.board, layers=layers)
 
     def GetValidPosCpp(self):
-        return Data.GetAllValidPosCpp(self.block, self.board)
+        return self.GetAllValidPosCpp(self.block, self.board)
 
     def GetCurrentRound(self):  # 返回当前回合数
         return (self.time + 1)//2
@@ -94,15 +95,18 @@ class Data:
 
     def GetBlock(self):  # 返回当前需要操作的下落块
         return self.block
-
-    def GetBlockList(self):  # 返回剩余的未下落块
-        return self.pack
+    
+    def GetBlockList(self):    #返回剩余的未下落块
+        return self.pack.list
 
     def ViewMyPoint(self):  # 查看自己的分数
         if self.isFirst:
             return self.point1
         else:
             return self.point2
+    
+    def GetCombo(self):    #返回连击数
+        return self.combo
 
     def ViewOpponentPoint(self):  # 查看对手的分数
         if self.isFirst:
@@ -115,3 +119,17 @@ class Data:
             return self.time1
         else:
             return self.time2
+
+    def PutBlock(self,block,act,board):
+        block = Block.Block(block,act[2])
+        block.y = act[0]
+        block.x = act[1]
+        for x , y in block.showblock():
+            board[y][x] = block
+        return board
+        
+    def ShowBlock(self,block,act):
+        block = Block.Block(block,act[2])
+        block.y = act[0]
+        block.x = act[1]
+        return block.showblock()

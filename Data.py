@@ -124,3 +124,8 @@ class Data:
             board[y][x] = block
         return board
         
+    def ShowBlock(self,block,act):
+        block = Block.Block(block,act[2])
+        block.y = act[0]
+        block.x = act[1]
+        return block.showblock()

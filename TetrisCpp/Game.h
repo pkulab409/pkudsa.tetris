@@ -124,6 +124,12 @@ struct Board
 		return board[y] & (1u << (x + 11));
 	}
 
+	// Operator version of hasBlock
+	bool operator()(int y, int x)const
+	{
+		return board[y] & (1u << (x + 11));
+	}
+
 	// Check whether block(y) is full
 	bool isFull(int y)const
 	{
@@ -688,34 +694,38 @@ struct Game
 			else
 				winner = Draw;
 		}
-		/*printf("胜者是 %d\n", winner);
-		printf("游戏结束原因是");
-		switch (state)
+		if (enablePrint)
 		{
-		case Game::Gaming:
-			break;
-		case Game::JudgeToEnd:
-			printf("Judge to end\n");
-			break;
-		case Game::RoundLimit:
-			printf("Round limit\n");
-			break;
-		case Game::P1Overflow:
-			printf("Player 1 overflow\n");
-			break;
-		case Game::P2Overflow:
-			printf("Player 2 overflow\n");
-			break;
-		case Game::P1Error:
-			printf("Player 1 error\n");
-			break;
-		case Game::P2Error:
-			printf("Player 2 error\n");
-			break;
-		default:
-			break;
+			printf("胜者是 %d\n", winner);
+			printf("游戏结束原因是");
+			switch (state)
+			{
+			case Game::Gaming:
+				break;
+			case Game::JudgeToEnd:
+				printf("Judge to end\n");
+				break;
+			case Game::RoundLimit:
+				printf("Round limit\n");
+				break;
+			case Game::P1Overflow:
+				printf("Player 1 overflow\n");
+				break;
+			case Game::P2Overflow:
+				printf("Player 2 overflow\n");
+				break;
+			case Game::P1Error:
+				printf("Player 1 error\n");
+				break;
+			case Game::P2Error:
+				printf("Player 2 error\n");
+				break;
+			default:
+				break;
+			}
+			printf("time:\t%u\n", time);
+			printf("%u\t%u\n", score1, score2);
+			timer.wait(2000000000);
 		}
-		printf("time:\t%u\n", time);
-		printf("%u\t%u\n", score1, score2);*/
 	}
 };

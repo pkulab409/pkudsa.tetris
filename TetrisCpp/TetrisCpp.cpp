@@ -4,7 +4,7 @@
 int main()
 {
 	_set_printf_count_output(1);
-	Player* player1 = new file2();
+	Player* player1 = new file1();
 	Player* player2 = new file2();
 	// true: Print board
 	// false: Don't print board

@@ -26,10 +26,10 @@ class Data:
                 return False
         return True
     
-    def GetAllValidPosCpp(self, type, field): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
+    def getAllValidActCpp(self, type, field): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
         return CppAcceleration.GetAllValidPositions(type, field)
 
-    def GetAllValidPos(self, type, field, layers=3):  # 寻找所有可能位置,默认层数是3
+    def getAllValidAct(self, type, field, layers=3):  # 寻找所有可能位置,默认层数是3
         validboard = [[[1 for i in range(4)]
                        for i in range(10)] for i in range(15)]
         test = Block.Block(type, 0)
@@ -73,54 +73,46 @@ class Data:
                         for i in range(10)]for i in range(10)]
         return phaseboard
 
-    def HaveValidPos(self, aphaseboard):
-        for row in aphaseboard:
-            for column in row:
-                for v in column:
-                    if v:
-                        return True
-        return False
-
-    def GetValidPos(self, layers=3):  # 返回针对当前块的可能位置
+    def getValidAct(self, layers=3):  # 返回针对当前块的可能位置
         return self.GetAllValidPos(self.block, self.board, layers=layers)
 
-    def GetValidPosCpp(self):
+    def getValidActCpp(self):
         return self.GetAllValidPosCpp(self.block, self.board)
 
-    def GetCurrentRound(self):  # 返回当前回合数
+    def getCurrentRound(self):  # 返回当前回合数
         return (self.time + 1)//2
 
-    def GetBoard(self):  # 返回当前棋盘,后手玩家会获得翻转棋盘
+    def getBoard(self):  # 返回当前棋盘,后手玩家会获得翻转棋盘
         return self.board
 
-    def GetBlock(self):  # 返回当前需要操作的下落块
+    def getBlock(self):  # 返回当前需要操作的下落块
         return self.block
     
-    def GetBlockList(self):    #返回剩余的未下落块
+    def getBlockList(self):    #返回剩余的未下落块
         return self.pack.list
 
-    def ViewMyPoint(self):  # 查看自己的分数
+    def viewMyPoint(self):  # 查看自己的分数
         if self.isFirst:
             return self.point1
         else:
             return self.point2
     
-    def GetCombo(self):    #返回连击数
+    def getCombo(self):    #返回连击数
         return self.combo
 
-    def ViewOpponentPoint(self):  # 查看对手的分数
+    def viewOpponentPoint(self):  # 查看对手的分数
         if self.isFirst:
             return self.point2
         else:
             return self.point1
 
-    def GetTimeLeft(self):  # 查看自己的剩余时间
+    def getTimeLeft(self):  # 查看自己的剩余时间
         if self.isFirst:
             return self.time1
         else:
             return self.time2
 
-    def PutBlock(self,block,act,board):
+    def putBlock(self,block,act,board):
         block = Block.Block(block,act[2])
         block.y = act[0]
         block.x = act[1]
@@ -128,7 +120,7 @@ class Data:
             board[y][x] = block
         return board
         
-    def ShowBlock(self,block,act):
+    def showBlock(self,block,act):
         block = Block.Block(block,act[2])
         block.y = act[0]
         block.x = act[1]

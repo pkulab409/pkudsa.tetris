@@ -3,6 +3,7 @@
 #include <vector>
 #include <random>
 #include <string>
+#include <intrin.h>
 unsigned int constexpr PeaceAreaWidth = 10;
 unsigned int constexpr BattleAreaWidth = 5;
 unsigned int constexpr PlayerWidth = PeaceAreaWidth + BattleAreaWidth;
@@ -134,6 +135,31 @@ struct Board
 	bool isFull(int y)const
 	{
 		return board[y] == 0x1FF800u;
+	}
+
+	// Return number of blocks in row y
+	unsigned int blockNum(int y)const
+	{
+		return __popcnt(board[y]);
+	}
+
+	// Return first block position, if there is none, return -1
+	int firstBlock(int y)const
+	{
+		unsigned long a;
+		if (_BitScanForward(&a, board[y] >> 11))
+			return a;
+		else return -1;
+	}
+
+	// Return first blank position, if there is none, return -1
+	int firstBlank(int y)const
+	{
+		unsigned long a;
+		unsigned int data((~board[y]) & 0x1FF800u);
+		if (_BitScanForward(&a, data >> 11))
+			return a;
+		else return -1;
 	}
 
 	// Write a block into board, behaviour is undefined if act is invalid

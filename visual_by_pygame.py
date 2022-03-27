@@ -46,7 +46,7 @@ pygame.display.set_caption("方块大战————pygame可视化调试界面"
 
 # 设置速度
 clock = pygame.time.Clock()
-FPS = 30  # FPS越大速度越快！
+FPS = 144  # FPS越大速度越快！
 
 running = True
 gameover = False

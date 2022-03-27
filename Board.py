@@ -75,3 +75,6 @@ class Board:
         for row in self.list:
             row.reverse()
         self.list.reverse()
+
+    def clear(self):
+        self.list=[[0 for i in range(10)] for i in range(25)]

@@ -29,6 +29,7 @@ class Game:
         self.block = -1  # 本回合方块
         self.teamname = [teamfirst, teamlast]
         self.state = "gaming"
+        self.limit = limit
         self.time1 = limit  # 玩家1剩余时间
         self.time2 = limit  # 玩家2剩余时间
         self.board = Board.Board(PeaceAreaWidth, BattleAreaWidth)  # 棋盘
@@ -202,7 +203,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             self.removeline = False
 
     def end(self):
-        print("本局游戏结束")
+        # print("本局游戏结束")
         if self.state == 'round limit':
             if self.point1 > self.point2:
                 self.winner = 1
@@ -210,13 +211,39 @@ self.player.append(playerlast(False))""".format(teamlast))
                 self.winner = 2
             else:
                 self.winner = "平局"
-        print("胜者是", self.winner)
-        print("游戏结束原因是", self.state)
-        print(self.time)
+        # print("胜者是", self.winner)
+        # print("游戏结束原因是", self.state)
+        # print(self.time)
+
+    def reset(self):
+        self.block = -1
+        self.state = "gaming"
+        self.time1 = self.limit
+        self.time2 = self.limit
+        self.board.clear()
+        self.pack.__init__()
+        self.winner = -1
+        self.combo = 0
+        self.removeline = False
+        self.point1 = 0
+        self.point2 = 0
+        self.time = 0
 
 
 if __name__ == "__main__":
-    play = Game("file1", "file2", 100)
-    while play.state == "gaming":
-        play.turn()
-    play.end()
+    play = Game("file2", "file2", 100)
+    rounds = 10
+    s0 = 0
+    for i in range(rounds):
+        begin = time.time()
+        while play.state == "gaming":
+            play.turn()
+        end = time.time()
+        print(end-begin)#, play.point1, play.point2)
+        if play.winner == 1:
+            s0 += play.point1
+        else:
+            s0 += play.point2
+        play.end()
+        play.reset()
+    print(s0/rounds)

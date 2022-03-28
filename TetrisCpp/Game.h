@@ -162,6 +162,14 @@ struct Board
 		else return -1;
 	}
 
+	// Return row transition times
+	unsigned int getRowTransitions(int y)const
+	{
+		unsigned int a(board[y]);
+		a |= 0x200400;
+		return __popcnt(a ^ (a << 1)) - 2;
+	}
+
 	// Write a block into board, behaviour is undefined if act is invalid
 	void writein(unsigned int type_, Act act_)
 	{

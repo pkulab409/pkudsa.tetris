@@ -116,8 +116,8 @@ class Data:
         block = Block.Block(block, act[2])
         block.y = act[0]
         block.x = act[1]
-        for x, y in block.showblock():
-            board[y][x] = block
+        for x , y in block.showblock():
+            board[y][x] = block.type
         return board
 
     def showBlock(self, block, act):

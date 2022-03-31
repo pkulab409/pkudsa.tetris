@@ -18,18 +18,19 @@ class Data:
         self.point2 = None
         self.combo = None
 
-    def judge(self, pos, field):  # 判定位置是否碰撞
-        for x, y in pos:
-            if x < 0 or x > 9 or y > 14:
-                return False
-            elif y >= 0 and field[y][x] != 0:
-                return False
-        return True
+    def getAllValidActCpp(self, type, board):  # 返回值是允许的位置的三元组 (y, x, pos) 的列表
+        return CppAcceleration.GetAllValidPositions(type, board)
 
-    def getAllValidActCpp(self, type, field):  # 返回值是允许的位置的三元组 (y, x, pos) 的列表
-        return CppAcceleration.GetAllValidPositions(type, field)
+    def getAllValidAct(self, type, board, layers = 3):  # 寻找所有可能位置,默认层数是3
 
-    def getAllValidAct(self, type, field, layers=3):  # 寻找所有可能位置,默认层数是3
+        def judge(pos, board):  # 判定位置是否碰撞
+            for x, y in pos:
+                if x < 0 or x > 9 or y > 14:
+                    return False
+                elif y >= 0 and board[y][x] != 0:
+                    return False
+            return True
+
         validboard = [[[1 for i in range(4)]
                        for i in range(10)] for i in range(15)]
         test = Block.Block(type, 0)
@@ -38,7 +39,7 @@ class Data:
             for x in range(10):
                 for y in range(15):
                     test.move(x, y)
-                    validboard[y][x][pos] = self.judge(test.showblock(), field)
+                    validboard[y][x][pos] = judge(test.showblock(), board)
         phaseboard = [validboard[0]] + \
             [[[0 for i in range(4)] for i in range(10)] for i in range(14)]
         for y in range(1, 15):
@@ -83,7 +84,7 @@ class Data:
         return (self.time + 1)//2
 
     def getBoard(self):  # 返回当前棋盘,后手玩家会获得翻转棋盘
-        return self.board
+        return copy.deepcopy(self.board)
 
     def getBlock(self):  # 返回当前需要操作的下落块
         return self.block
@@ -112,16 +113,16 @@ class Data:
         else:
             return self.time2
 
-    def putBlock(self, block, act, board):
-        block = Block.Block(block, act[2])
+    def putBlock(self, type, act, board):
+        block = Block.Block(type, act[2])
         block.y = act[0]
         block.x = act[1]
         for x , y in block.showblock():
             board[y][x] = block.type
         return board
 
-    def showBlock(self, block, act):
-        block = Block.Block(block, act[2])
+    def showBlock(self, type, act):
+        block = Block.Block(type, act[2])
         block.y = act[0]
         block.x = act[1]
         return block.showblock()

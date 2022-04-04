@@ -1,7 +1,7 @@
 import Board
 import Pack
 import time
-import Data
+import MatchData
 import copy
 
 # 奖励字典

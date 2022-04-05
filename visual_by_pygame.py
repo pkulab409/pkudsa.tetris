@@ -161,6 +161,7 @@ class Brick():
         for cube in self.SHAPES_WITH_DIR[self.shape]:
             pygame.draw.rect(screen, self.color, (cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH))
             pygame.draw.rect(screen, WHITE, (cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH), 2)
+
 ptime=[0,0,0,0,0]
 btime=[0,0,0,0,0]
 combo=0

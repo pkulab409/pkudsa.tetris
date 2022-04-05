@@ -45,7 +45,7 @@ pygame.display.set_caption("方块大战————pygame可视化调试界面"
 
 #设置速度
 clock = pygame.time.Clock()
-FPS = 20000   #FPS越大速度越快！
+FPS = 20   #FPS越大速度越快！
 
 running = True
 gameover = False
@@ -162,54 +162,37 @@ class Brick():
             pygame.draw.rect(screen, self.color, (cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH))
             pygame.draw.rect(screen, WHITE, (cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH), 2)
 
-ptime=[0,0,0,0,0]
-btime=[0,0,0,0,0]
-combo=0
-round=0
-pointall=0
-pointwin=0
-for i in range(100):
-    point1=0
-    point2=0
-    round+=1
-    #绘制场地并开始比赛
-    agame = main.Game('file2','file2',100)
-    w =  Wall()
-    while agame.state == 'gaming':
 
-        pygame.display.update()
-        clock.tick(FPS)
 
-        #调试者操作
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:    #结束调试
-                    pygame.quit()
-                    sys.exit()
-                elif event.key == pygame.K_p:    #暂停调试开关
-                    if not pause:
-                        pause = True
-                    else:
-                        pause = False
-        
-        if not pause:
-            agame.turn()
-            screen_color_matrix = agame.board.list
-            now_cube = Brick(agame.block - 1)
-            point1 = agame.point1
-            point2 = agame.point2
-            combo = agame.combo
-        
-        w.drawAll()
+#绘制场地并开始比赛
+agame = main.Game('file2','file2',100)
+w =  Wall()
+while agame.state == 'gaming':
 
-    #游戏结束广播
-    agame.end()
-    p=agame.pcleartimes
-    b=agame.bcleartimes
-    pointall+=agame.point1
-    pointall+=agame.point2
-    pointwin+=max(agame.point1,agame.point2)
-    for i in range(5):
-        ptime[i]+=p[i]
-        btime[i]+=b[i]
-    print(ptime[1]/round,ptime[2]/round,ptime[3]/round,ptime[4]/round,btime[1]/round,btime[2]/round,btime[3]/round,btime[4]/round,pointwin/round,pointall/round)
+    pygame.display.update()
+    clock.tick(FPS)
+
+    #调试者操作
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:    #结束调试
+                pygame.quit()
+                sys.exit()
+            elif event.key == pygame.K_p:    #暂停调试开关
+                if not pause:
+                    pause = True
+                else:
+                    pause = False
+    
+    if not pause:
+        agame.turn()
+        screen_color_matrix = agame.board.list
+        now_cube = Brick(agame.block - 1)
+        point1 = agame.point1
+        point2 = agame.point2
+        combo = agame.combo
+    
+    w.drawAll()
+
+#游戏结束广播
+agame.end()

@@ -186,8 +186,9 @@ while agame.state == 'gaming':
     
     if not pause:
         agame.turn()
-        screen_color_matrix = agame.board.list
-        now_cube = Brick(agame.block - 1)
+        block = agame.block - 1
+        screen_color_matrix = agame.visualBoard.list
+        now_cube = Brick(block)
         point1 = agame.point1
         point2 = agame.point2
         combo = agame.combo

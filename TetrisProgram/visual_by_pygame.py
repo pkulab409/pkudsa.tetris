@@ -165,7 +165,7 @@ class Brick():
 
 
 #绘制场地并开始比赛
-agame = main.Game('file2','file2',100)
+agame = main.Game('stupidAI1','stupidAI2',100)
 w =  Wall()
 while agame.state == 'gaming':
 

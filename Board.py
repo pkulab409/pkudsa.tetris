@@ -10,7 +10,7 @@ class Board:
     def erase(self):    #定义消去行的操作
         line1 = 0    #用于返回和平区消行数量
         line2 = 0    #用于返回战争区消行数量
-        empty = False    #用于判断清空奖励(虽然在2.1版本的规则里已经没有这一条了emmm,而且就目前的AI模拟情况来看,好像没人能清空?)
+        empty = False    #用于判断清空奖励(虽然在目前的版本规则里已经没有这一条了emmm.而且就目前的AI模拟情况来看,好像没人能清空?)
 
         part1 = self.list[0:self.PeaceAreaWidth + self.BattleAreaWidth]
         part2 = self.list[self.PeaceAreaWidth + self.BattleAreaWidth:self.PeaceAreaWidth*2 + self.BattleAreaWidth]
@@ -34,12 +34,17 @@ class Board:
         return (line1,line2,empty)
 
 
-    def writein(self,y,x,direction,type):#在某个块生效时写入到面板里
-        test=Block.Block(type,direction)
-        test.move(x,y)
-        for x,y in test.showblock():
-            if y>=0:
-                self.list[y][x]=type
+    def writein(self,y,x,direction,type):    # 在某个块生效时写入到面板里
+        block = Block.Block(type,direction)
+        block.move(x,y)
+        for x, y in block.showblock():
+            self.list[y][x] = 1
+    
+    def visualWriteIn(self,act,type):
+        block = Block.Block(type, act[2])
+        block.move(act[1], act[0])
+        for x, y in block.showblock():
+            self.list[y][x] = type
 
     def reverse(self):
         for row in self.list:

@@ -32,6 +32,7 @@ class Game:
         self.time1 = limit    #玩家1剩余时间
         self.time2 = limit    #玩家2剩余时间
         self.board = Board.Board(PeaceAreaWidth, BattleAreaWidth)    #棋盘
+        self.visualBoard = Board.Board(PeaceAreaWidth, BattleAreaWidth)    #用于pygame可视化
         self.pack = Pack.Pack()    #全部块数
         self.winner = -1
         self.combo = 0
@@ -132,6 +133,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             #合法性判定
             if action in validpos:
                 self.board.writein(action[0],action[1],action[2],self.block)
+                self.visualBoard.visualWriteIn(action,self.block)
             else:    #p1 非法落块
                 print("p1 ai illegal")
                 self.state = "judge to end"
@@ -140,6 +142,7 @@ self.player.append(playerlast(False))""".format(teamlast))
 
             #清理满行
             peaceline, battleline, empty = self.board.erase()
+            self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
             self.bcleartimes[battleline]+=1
 
@@ -155,6 +158,7 @@ self.player.append(playerlast(False))""".format(teamlast))
 
             #后手玩家需要翻转棋盘
             self.board.reverse()    
+            self.visualBoard.reverse()
             self.isFirst == False
             #p2 有效落块位置
             validpos = self.matchdata.getAllValidAction(self.block, self.board.list)
@@ -192,6 +196,7 @@ self.player.append(playerlast(False))""".format(teamlast))
             #合法性判定            
             if action in validpos:
                 self.board.writein(action[0],action[1],action[2],self.block)
+                self.visualBoard.visualWriteIn(action,self.block)
             else:    #p2 非法落块
                 print("p2 ai illegal")
                 self.state = "judge to end"
@@ -200,6 +205,7 @@ self.player.append(playerlast(False))""".format(teamlast))
 
             #清理满行
             peaceline, battleline, empty = self.board.erase()
+            self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
             self.bcleartimes[battleline]+=1
 
@@ -212,6 +218,7 @@ self.player.append(playerlast(False))""".format(teamlast))
 
             #把棋盘翻转回去
             self.board.reverse()
+            self.visualBoard.reverse()
 
             #连击结算
             if self.removeline:

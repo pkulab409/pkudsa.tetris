@@ -8,7 +8,7 @@ class MatchData:
     def __init__(self):
         self.isFirst = None
         self.time = None
-        self.board = None    #Data类中的board属性是一个二维数组,而不是我们定义的Board类
+        self.board = None    # MatchData类中的board属性是一个二维数组,而不是我们定义的Board类
         self.pack = None
         self.block = None
         self.time1 = None
@@ -17,7 +17,7 @@ class MatchData:
         self.point2 = None
         self.combo = None
 
-    def judge(self,pos,board):#判定位置是否碰撞
+    def judge(self,pos,board): # 判定位置是否碰撞
         for x,y in pos:
             if x<0 or x>9 or y>14:
                 return False
@@ -78,44 +78,44 @@ class MatchData:
                         return True
         return False
 
-    def getValidActionSlow(self):    #返回针对当前块的可能位置
+    def getValidActionSlow(self):    # 返回针对当前块的可能位置
         return self.getAllValidAction(self.block, self.board)
 
     def getValidAction(self):
         return self.getAllValidAction(self.block, self.board)
 
-    def getCurrentRound(self):    #返回当前回合数
+    def getCurrentRound(self):    # 返回当前回合数
         return (self.time + 1)//2
 
-    def getBoard(self):    #返回当前棋盘,后手玩家会获得翻转棋盘
+    def getBoard(self):    # 返回当前棋盘,后手玩家会获得翻转棋盘
         return self.board
 
-    def getCurrentBlock(self):    #返回当前需要操作的下落块
+    def getCurrentBlock(self):    # 返回当前需要操作的下落块
         timenow = self.time
         return self.pack.get(timenow)
     
-    def getBlockList(self):    #返回本局的整个下落块列表
+    def getBlockList(self):    # 返回本局的整个下落块列表
         return self.pack.list
     
-    def getBlock(self,round,isFirst):    #返回任意回合和先后手的块
+    def getBlock(self,round,isFirst):    # 返回任意回合和先后手的块
         return self.pack.get(2*round-isFirst)
 
-    def getMyPoint(self):    #查看自己的分数
+    def getMyPoint(self):    # 查看自己的分数
         if self.isFirst:
             return self.point1
         else:
             return self.point2
     
-    def getCombo(self):    #返回连击数
+    def getCombo(self):    # 返回连击数
         return self.combo
 
-    def getOpponentPoint(self):    #查看对手的分数
+    def getOpponentPoint(self):    # 查看对手的分数
         if self.isFirst:
             return self.point2
         else:
             return self.point1
     
-    def getTimeLeft(self):    #查看自己的剩余时间
+    def getTimeLeft(self):    # 查看自己的剩余时间
         if self.isFirst:
             return self.time1
         else:
@@ -136,8 +136,8 @@ class MatchData:
         return block.showblock()
     
     def removeLines(self,board):
-        line1 = 0    #用于返回和平区消行数量
-        line2 = 0    #用于返回战争区消行数量
+        line1 = 0    # 用于返回和平区消行数量
+        line2 = 0    # 用于返回战争区消行数量
         
         part1 = board[0:15]
         part2 = board[15:25]

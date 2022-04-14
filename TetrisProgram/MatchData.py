@@ -26,7 +26,10 @@ class MatchData:
         return True
     
     def getAllValidAction(self, type, board): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
-        return CppAcceleration.GetAllValidPositions(type, board)
+        return CppAcceleration.GetAllValidAction(type, board)
+
+    def getAllValidActionNonRepeating(self, type, board): # 返回值是操作后结果不重复的允许的位置的三元组 (y, x, pos) 的列表
+        return CppAcceleration.GetAllValidActionNonRepeating(type, board)
 
     def getAllValidActionSlow(self, type, board):    #寻找所有可能位置,默认层数是3
         layers = 10

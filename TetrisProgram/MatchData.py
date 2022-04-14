@@ -17,13 +17,6 @@ class MatchData:
         self.point2 = None
         self.combo = None
 
-    def judge(self,pos,board): # 判定位置是否碰撞
-        for x,y in pos:
-            if x<0 or x>9 or y>14:
-                return False
-            elif y>=0 and board[y][x]!=0:
-                return False
-        return True
     
     def getAllValidActionRepeating(self, type, board): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
         return CppAcceleration.GetAllValidActionRepeating(type, board)
@@ -32,6 +25,15 @@ class MatchData:
         return CppAcceleration.GetAllValidAction(type, board)
 
     def getAllValidActionSlow(self, type, board):    #寻找所有可能位置,默认层数是3
+
+        def judge(pos,board): # 判定位置是否碰撞
+            for x,y in pos:
+                if x<0 or x>9 or y>14:
+                    return False
+                elif y>=0 and board[y][x]!=0:
+                    return False
+            return True
+
         layers = 10
         validboard=[[[1 for i in range(4)] for i in range(10)] for i in range(15)]
         test=Block.Block(type,0)
@@ -40,7 +42,7 @@ class MatchData:
             for x in range(10):
                 for y in range(15):
                     test.move(x,y)
-                    validboard[y][x][pos]=self.judge(test.showblock(),board)
+                    validboard[y][x][pos]=judge(test.showblock(),board)
         phaseboard=[validboard[0]]+[[[0 for i in range(4)] for i in range(10)] for i in range(14)]
         for y in range(1,15):
             for x in range(10):#从上方继承
@@ -72,14 +74,6 @@ class MatchData:
                         phaseboard[y][x][pos]=0 
         phaseboard += [[[0 for i in range(4)]for i in range(10)]for i in range(10)]
         return phaseboard
-
-    def HaveValidPos(self,aphaseboard):
-        for row in aphaseboard:
-            for column in row:
-                for v in column:
-                    if v:
-                        return True
-        return False
 
     def getValidActionSlow(self):    # 返回针对当前块的可能位置
         return self.getAllValidAction(self.block, self.board)

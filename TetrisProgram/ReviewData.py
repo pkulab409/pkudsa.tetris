@@ -1,4 +1,5 @@
 import json
+import copy
 import os
 import sys
 
@@ -27,8 +28,8 @@ class ReviewData:
                         }
 
     def saveToData(self):
-        self.gameData['matchData'][self.time] = self.chessboardData
+        self.gameData['matchData'][self.time] = copy.deepcopy(self.chessboardData)
 
     def save(self):
         with open('review data\\{} vs {} review data.json'.format(self.gameData['player1'], self.gameData['player2']), 'w') as f:
-            json.dump(self.gameData, f)
+            json.dump(self.gameData, f, indent = 4)

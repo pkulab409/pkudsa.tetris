@@ -2,7 +2,13 @@
 
 import Block
 import copy
-import CppAcceleration
+
+try:
+    import CppAcceleration
+except:
+    import traceback
+    traceback.print_exc()
+    CppAcceleration = None
 
 class MatchData:
     def __init__(self):
@@ -19,10 +25,14 @@ class MatchData:
 
     
     def getAllValidActionRepeating(self, type, board): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
-        return CppAcceleration.GetAllValidActionRepeating(type, board)
+        if CppAcceleration:
+            return CppAcceleration.GetAllValidActionRepeating(type, board)
+        return self.getAllValidActionSlow(type, board)
 
     def getAllValidAction(self, type, board): # 返回值是操作后结果不重复的允许的位置的三元组 (y, x, pos) 的列表
-        return CppAcceleration.GetAllValidAction(type, board)
+        if CppAcceleration:
+            return CppAcceleration.GetAllValidAction(type, board)
+        return self.getAllValidActionSlow(type, board)
 
     def getAllValidActionSlow(self, type, board):    #寻找所有可能位置,默认层数是3
 

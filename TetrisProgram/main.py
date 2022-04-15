@@ -22,6 +22,13 @@ BattleAreaWidth = 5    #战斗区行数
         #(y:int,x:int,position:int)
 
 
+# 分离import接口
+def import_by_name(player_name, is_first):
+    pool=[]
+    exec(f'''from players.{player_name} import Player;pool.append(Player({is_first}))''')
+    return pool.pop()
+
+
 class Game:
     def __init__(self, teamfirst, teamlast, limit = 9999):
         #创建一个供玩家调用数据和方法的类
@@ -54,15 +61,13 @@ class Game:
 
         #读入玩家程序,读不到判负
         try:
-            exec("""from players.{} import Player as playerfirst
-self.player.append(playerfirst(True))""".format(teamfirst))
+            self.player.append(import_by_name(teamfirst, True))
         except:
             self.winner = 2
             print("p1 ai missing")
             self.state = "judge to end"
         try:
-            exec("""from players.{} import Player as playerlast
-self.player.append(playerlast(False))""".format(teamlast))
+            self.player.append(import_by_name(teamlast, False))
         except:
             if self.state == "judge to end":
                 print("p2 ai missing")

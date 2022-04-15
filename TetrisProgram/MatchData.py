@@ -2,13 +2,27 @@
 
 import Block
 import copy
+import sys
 
 try:
-    import CppAcceleration
+    if sys.version_info[0] != 3:
+        raise Exception("Must use Python 3")
+    elif sys.version_info[1] < 7:
+        raise Exception("Must use Python 3.7 or higher version")
+    if sys.version_info[1] == 7:
+        import CppAcceleration37 as CppAcceleration
+    elif sys.version_info[1] == 8:
+        import CppAcceleration38 as CppAcceleration
+    elif sys.version_info[1] == 9:
+        import CppAcceleration39 as CppAcceleration
+    elif sys.version_info[1] == 10:
+        import CppAcceleration310 as CppAcceleration
+    print("Support CppAcceleration3" + str(sys.version_info[1]))
 except:
     import traceback
     traceback.print_exc()
     CppAcceleration = None
+    print("Does not support CppAcceleration!")
 
 class MatchData:
     def __init__(self):

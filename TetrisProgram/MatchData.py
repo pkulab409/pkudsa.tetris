@@ -3,12 +3,16 @@
 import Block
 import copy
 import sys
+import platform
 
 try:
     if sys.version_info[0] != 3:
         raise Exception("Must use Python 3")
     elif sys.version_info[1] < 7:
         raise Exception("Must use Python 3.7 or higher version")
+    if platform.system() != "Windows":
+        raise Exception("CppAcceleration only support Windows!")
+
     if sys.version_info[1] == 7:
         import CppAcceleration37 as CppAcceleration
     elif sys.version_info[1] == 8:
@@ -97,7 +101,13 @@ class MatchData:
                     if y==1 and type==1 and pos==3:
                         phaseboard[y][x][pos]=0 
         phaseboard += [[[0 for i in range(4)]for i in range(10)]for i in range(10)]
-        return phaseboard
+        result = []
+        for y in range(14, -1, -1):
+            for x in range(10):
+                for pos in range(4):
+                    if phaseboard[y][x][pos]:
+                        result.append((y, x, pos))
+        return result
 
     def getValidActionSlow(self):    # 返回针对当前块的可能位置
         return self.getAllValidAction(self.block, self.board)

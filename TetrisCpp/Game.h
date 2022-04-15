@@ -436,8 +436,8 @@ struct Data
 		return true;
 	}
 
-	// Get all valid action of a block in type, default board is game main board
-	std::vector<Act> getValidAct(unsigned int type_ = 0, Board const* board_ = nullptr)const
+	// Get all repeating valid action of a block in type, default board is game main board
+	std::vector<Act> getValidActRepeating(unsigned int type_ = 0, Board const* board_ = nullptr)const
 	{
 		unsigned long long validTable[PlayerWidth]{ 0 };
 		unsigned long long resultTable[PlayerWidth];
@@ -489,6 +489,120 @@ struct Data
 		return result;
 	}
 
+	// Get all non-repeating valid action of a block in type, default board is game main board
+	std::vector<Act> getValidAct(unsigned int type_ = 0, Board const* board_ = nullptr)const
+	{
+		unsigned long long validTable[PlayerWidth]{ 0 };
+		unsigned long long resultTable[PlayerWidth];
+		if (type_ == 0)
+			type_ = *type;
+		if (board_ == nullptr)
+			board_ = board;
+		for (int c0(0); c0 < PlayerWidth; ++c0)
+			for (int c1(0); c1 < 10; ++c1)
+				for (int c2(0); c2 < 4; ++c2)
+					if (judge(type_, { c0, c1, c2 }, board_))
+						validTable[c0] |= (1ull << (4 * c1 + c2));
+		resultTable[0] = validTable[0];
+		for (int c0(1); c0 < PlayerWidth; ++c0)
+		{
+			unsigned long long valid(validTable[c0]);
+			unsigned long long temp = resultTable[c0 - 1] & valid;
+			for (int c1(0); c1 < 10; ++c1)
+			{
+				temp |= (temp << 4) & valid;
+				temp &= 0xFFFFFFFFFFull;
+				temp |= (temp >> 4) & valid;
+				temp &= 0xFFFFFFFFFFull;
+				unsigned long long mask0(0x0F0F0F0F0Full);
+				unsigned long long mask1(0xF0F0F0F0F0ull);
+				unsigned long long temp0(temp & mask0);
+				unsigned long long temp1(temp & mask1);
+				temp0 |= (temp0 << 3) | (temp0 << 2) | (temp0 << 1) | (temp0 >> 1) | (temp0 >> 2) | (temp0 >> 3);
+				temp1 |= (temp1 << 3) | (temp1 << 2) | (temp1 << 1) | (temp1 >> 1) | (temp1 >> 2) | (temp1 >> 3);
+				temp0 &= mask0;
+				temp1 &= mask1;
+				temp0 |= temp1;
+				temp = temp0 & valid;
+			}
+			resultTable[c0] = temp;
+		}
+		for (int c0(0); c0 < PlayerWidth - 1; ++c0)
+			resultTable[c0] = (resultTable[c0] ^ validTable[c0 + 1]) & resultTable[c0];
+		type_ -= 1;
+		resultTable[0] &= exceptionTable[type_];
+		if (type_ == 0)
+			resultTable[1] &= 0x7777777777ull;
+		std::vector<Act>result;
+		type_ += 1;
+		for (int c0(PlayerWidth - 1); c0 >= 0; --c0)
+			for (int c1(0); c1 < 10; ++c1)
+				for (int c2(0); c2 < 4; ++c2)
+					if (resultTable[c0] & (1ull << (c1 * 4 + c2)))
+					{
+						if (type_ == 1)
+						{
+							if (c2 == 2)
+							{
+								if (resultTable[c0] & (1ull << ((c1 - 1) * 4 + 0)))
+									continue;
+							}
+							else if (c2 == 3)
+							{
+								if (resultTable[c0 - 1] & (1ull << (c1 * 4 + 1)))
+									continue;
+							}
+						}
+						else if (type_ == 4)
+						{
+							bool flag(false);
+							switch (c2)
+							{
+							case 0:break;
+							case 1:
+							{
+								if (resultTable[c0 + 1] & (1ull << (c1 * 4 + 0)))
+									flag = true;
+							}
+							break;
+							case 2:
+							{
+								if (resultTable[c0 + 1] & (1ull << ((c1 - 1) * 4 + 0)))
+									flag = true;
+								else if (resultTable[c0] & (1ull << ((c1 - 1) * 4 + 1)))
+									flag = true;
+							}
+							break;
+							case 3:
+							{
+								if (resultTable[c0] & (1ull << ((c1 - 1) * 4 + 0)))
+									flag = true;
+								else if (resultTable[c0 - 1] & (1ull << ((c1 - 1) * 4 + 1)))
+									flag = true;
+								else if (resultTable[c0 - 1] & (1ull << (c1 * 4 + 2)))
+									flag = true;
+							}
+							break;
+							}
+							if (flag)continue;
+						}
+						else if (type_ == 5 || type_ == 7)
+						{
+							if (c2 == 2)
+							{
+								if (resultTable[c0 + 1] & (1ull << (c1 * 4 + 0)))
+									continue;
+							}
+							else if (c2 == 3)
+							{
+								if (resultTable[c0] & (1ull << ((c1 - 1) * 4 + 1)))
+									continue;
+							}
+						}
+						result.push_back({ c0, c1, c2 });
+					}
+		return result;
+	}
 };
 
 // Player AI base, user player must inherit from this

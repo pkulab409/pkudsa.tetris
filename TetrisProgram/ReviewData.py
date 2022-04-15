@@ -3,7 +3,7 @@ import copy
 import os
 import sys
 
-os.chdir(sys.path[0])
+# os.chdir(sys.path[0]) # 危
 
 
 class ReviewData:
@@ -31,5 +31,15 @@ class ReviewData:
         self.gameData['matchData'][self.time] = copy.deepcopy(self.chessboardData)
 
     def save(self):
-        with open('review data\\{} vs {} review data.json'.format(self.gameData['player1'], self.gameData['player2']), 'w') as f:
-            json.dump(self.gameData, f, indent = 4)
+        filename = '{} vs {} review data.json'.format(self.gameData['player1'],
+                                                      self.gameData['player2'])
+        savepath = os.path.join(
+            os.path.dirname(__file__),
+            'review data',
+            filename,
+        )
+        self.saveToPath(savepath)
+
+    def saveToPath(self, path):
+        with open(path, 'w') as f:
+            json.dump(self.gameData, f, indent=4)

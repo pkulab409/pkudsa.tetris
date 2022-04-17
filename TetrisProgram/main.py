@@ -93,7 +93,7 @@ class Game:
     # 记录复盘数据
     def saveToReviewData(self):
         self.reviewData.time = self.time
-        self.reviewData.chessboardData['board'] = copy.deepcopy(self.board.list)
+        self.reviewData.chessboardData['board'] = copy.deepcopy(self.visualBoard.list)
         self.reviewData.chessboardData['point1'] = self.point1
         self.reviewData.chessboardData['point2'] = self.point2
         self.reviewData.chessboardData['combo'] = self.combo

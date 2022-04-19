@@ -35,7 +35,7 @@ class ReviewData:
                                                       self.gameData['player2'])
         savepath = os.path.join(
             os.path.dirname(__file__),
-            'review data',
+            'ReviewData',
             filename,
         )
         self.saveToPath(savepath)

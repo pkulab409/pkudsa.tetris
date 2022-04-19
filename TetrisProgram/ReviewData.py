@@ -1,10 +1,6 @@
 import json
 import copy
 import os
-import sys
-
-# os.chdir(sys.path[0]) # 危
-
 
 class ReviewData:
     def __init__(self, player1, player2):
@@ -35,7 +31,7 @@ class ReviewData:
                                                       self.gameData['player2'])
         savepath = os.path.join(
             os.path.dirname(__file__),
-            'ReviewData',
+            'review data',
             filename,
         )
         self.saveToPath(savepath)

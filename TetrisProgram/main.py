@@ -289,6 +289,7 @@ class Game:
 
         # 保存复盘数据
         self.saveToReviewData()
+        self.roundtag = [] # 清空roundtag
 
 
     #游戏结束的广播
@@ -315,7 +316,7 @@ if __name__ == "__main__":
     import os
     os.chdir(os.path.dirname(__file__))
 
-    play = Game("007","008",100)
+    play = Game("stupidAI1","stupidAI2",100)
     while play.state == "gaming":
         play.turn()
     play.end()

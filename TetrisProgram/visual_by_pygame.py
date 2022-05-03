@@ -45,7 +45,7 @@ pygame.display.set_caption("方块大战————pygame可视化调试界面"
 
 #设置速度
 clock = pygame.time.Clock()
-FPS = 20   #FPS越大速度越快！
+FPS = 200   #FPS越大速度越快！
 
 running = True
 gameover = False
@@ -165,7 +165,7 @@ class Brick():
 
 
 #绘制场地并开始比赛
-agame = main.Game('stupidAI1','stupidAI2',100)
+agame = main.Game("player1","stupidAI2",100)
 w =  Wall()
 while agame.state == 'gaming':
 

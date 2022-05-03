@@ -303,6 +303,7 @@ class Game:
             else:
                 self.winner = "平局"
         print("胜者是",self.winner)
+        print("分数",self.point1, self.point2)
         print("游戏结束原因是",self.state)
         print(self.time)
 

@@ -1,10 +1,6 @@
 import json
 import copy
 import os
-import sys
-
-# os.chdir(sys.path[0]) # 危
-
 
 class ReviewData:
     def __init__(self, player1, player2):
@@ -15,7 +11,7 @@ class ReviewData:
                                 'point2' : None,    # 后手当前总得分
                                 'combo' : None,    # 战斗区目前连消次数
                                 'currentBlock' : None,    # 当前回合块
-                                'tag' : None,    # 本回合标签
+                                'tag' : [],    # 本回合标签
                                 }
 
         self.gameData = {
@@ -31,6 +27,10 @@ class ReviewData:
         self.gameData['matchData'][self.time] = copy.deepcopy(self.chessboardData)
 
     def save(self):
+        folderPath = os.path.join(os.path.dirname(__file__),'review data/')
+        if not os.path.exists(folderPath):
+            os.mkdir(folderPath)
+            
         filename = '{} vs {} review data.json'.format(self.gameData['player1'],
                                                       self.gameData['player2'])
         savepath = os.path.join(

@@ -52,7 +52,7 @@ class MatchData:
             return CppAcceleration.GetAllValidAction(type, board)
         return self.getAllValidActionSlow(type, board)
 
-    def getAllValidActionSlow(self, type, board):    #寻找所有可能位置,默认层数是3
+    def getAllValidActionSlow(self, type, board):    #寻找所有可能位置
 
         def judge(pos,board): # 判定位置是否碰撞
             for x,y in pos:

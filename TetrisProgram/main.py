@@ -308,6 +308,7 @@ class Game:
 
         # 保存复盘数据
         self.reviewData.gameData['winner'] = self.winner
+        self.reviewData.gameData['tag'] = self.tag
         self.reason = self.state
         self.reviewData.save()
 

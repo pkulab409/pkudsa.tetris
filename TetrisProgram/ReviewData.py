@@ -11,7 +11,7 @@ class ReviewData:
                                 'point2' : None,    # 后手当前总得分
                                 'combo' : None,    # 战斗区目前连消次数
                                 'currentBlock' : None,    # 当前回合块
-                                'tag' : None,    # 本回合标签
+                                'tag' : [],    # 本回合标签
                                 }
 
         self.gameData = {

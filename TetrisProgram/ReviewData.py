@@ -27,8 +27,7 @@ class ReviewData:
         self.gameData['matchData'][self.time] = copy.deepcopy(self.chessboardData)
 
     def save(self):
-        filename = '{} vs {} review data.json'.format(self.gameData['player1'],
-                                                      self.gameData['player2'])
+        filename = '{} vs {} review data.json'.format(self.gameData['player1'], self.gameData['player2'])
         savepath = os.path.join(
             os.path.dirname(__file__),
             'review data',

@@ -1,2 +1,4 @@
 __pycache__/
 review data/*.json
+players/007.py
+players/008.py

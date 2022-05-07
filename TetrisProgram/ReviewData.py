@@ -7,6 +7,8 @@ class ReviewData:
         self.time = 0
         self.chessboardData =   {
                                 'board' : None,    # 当前棋盘状态(0~7构成的二维数组)
+                                'middleboard' : None,    # 消行前的棋盘 (如果为None,表示未消行)
+                                'action' : None,    # 本回合玩家操作
                                 'point1' : None,    # 先手当前总得分
                                 'point2' : None,    # 后手当前总得分
                                 'combo' : None,    # 战斗区目前连消次数

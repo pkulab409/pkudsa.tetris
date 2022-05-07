@@ -158,7 +158,7 @@ class Game:
             #合法性判定
             if action in validpos:
                 self.board.writein(action[0],action[1],action[2],self.block)
-                self.visualBoard.visualWriteIn(action,self.block)
+                self.visualBoard.visualWriteIn(action,self.block,True)
             else:    #p1 非法落块
                 print("p1 ai illegal")
                 self.state = "judge to end"
@@ -167,6 +167,8 @@ class Game:
                 return None
 
             #清理满行
+            if self.board.checkFull():
+                self.reviewData.chessboardData['middleboard'] = copy.deepcopy(self.visualBoard.list) # 为可视化储存消行前画面
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
@@ -228,7 +230,7 @@ class Game:
             #合法性判定
             if action in validpos:
                 self.board.writein(action[0],action[1],action[2],self.block)
-                self.visualBoard.visualWriteIn(action,self.block)
+                self.visualBoard.visualWriteIn(action,self.block,False)
             else:    #p2 非法落块
                 print("p2 ai illegal")
                 self.state = "judge to end"
@@ -237,6 +239,8 @@ class Game:
                 return None
 
             #清理满行
+            if self.board.checkFull():
+                self.reviewData.chessboardData['middleboard'] = copy.deepcopy(self.visualBoard.list)
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
@@ -288,6 +292,7 @@ class Game:
                     self.roundtag.append('p2 {}消'.format(peaceline + battleline))
 
         # 保存复盘数据
+        self.reviewData.chessboardData['action'] = action
         self.saveToReviewData()
         self.roundtag = [] # 清空roundtag
 

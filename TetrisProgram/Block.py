@@ -68,3 +68,8 @@ class Block:
             (self.x + offsets[2][0], self.y + offsets[2][1]),
             (self.x + offsets[3][0], self.y + offsets[3][1]),
             ]
+    
+    def showBlockVisual(self, action, isFirst = True):
+        self.move(action[1],action[0])
+        self.rotateto(action[2])
+        return [[y, x] for x, y in self.showblock()] if isFirst else [[24 - y, 9 - x] for x, y in self.showblock()]

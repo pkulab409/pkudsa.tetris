@@ -49,11 +49,11 @@ class Game:
         self.point2 = 0    #玩家2得分
         self.player = []
         self.time = 0    #游戏进行轮次(并非回合数!!!)
-        self.pcleartimes=[0,0,0,0,0]
-        self.bcleartimes=[0,0,0,0,0]
-        self.combocount=0
-        self.isFirst=0
-        self.round=0
+        self.pcleartimes = [0,0,0,0,0]
+        self.bcleartimes = [0,0,0,0,0]
+        self.combocount = 0
+        self.isFirst = 0
+        self.round = 0
         self.tag = None # 单局标签
         self.roundtag = [] # 回合标签
         self.higherscorer = None # 分数领先者 用于判断反超 便于添加tag
@@ -98,12 +98,12 @@ class Game:
     # 记录复盘数据
     def saveToReviewData(self):
         self.reviewData.time = self.time
+        self.reviewData.chessboardData['round'] = (self.time + 1)//2
         self.reviewData.chessboardData['board'] = copy.deepcopy(self.visualBoard.list)
         self.reviewData.chessboardData['point1'] = self.point1
         self.reviewData.chessboardData['point2'] = self.point2
         self.reviewData.chessboardData['combo'] = self.combo
         self.reviewData.chessboardData['currentBlock'] = self.block
-        self.reviewData.chessboardData['tag'] = self.roundtag
         self.reviewData.saveToData()
 
 
@@ -167,8 +167,10 @@ class Game:
                 return None
 
             #清理满行
-            if self.board.checkFull():
-                self.reviewData.chessboardData['middleboard'] = copy.deepcopy(self.visualBoard.list) # 为可视化储存消行前画面
+            if self.board.checkFull(): # 消行帧
+                self.reviewData.chessboardData['middleboard'] = True
+                self.reviewData.chessboardData['action'] = action
+                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
@@ -292,8 +294,11 @@ class Game:
                     self.roundtag.append('p2 {}消'.format(peaceline + battleline))
 
         # 保存复盘数据
-        self.reviewData.chessboardData['action'] = action
         self.saveToReviewData()
+        self.reviewData.chessboardData['middleboard'] = False
+        self.reviewData.chessboardData['tag'] = self.roundtag
+        if not (peaceline or battleline): # 非消行后帧
+            self.reviewData.chessboardData['action'] = action
         self.roundtag = [] # 清空roundtag
 
 

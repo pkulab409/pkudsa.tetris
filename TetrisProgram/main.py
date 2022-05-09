@@ -243,12 +243,9 @@ class Game:
                 return None
 
             #清理满行
+            full = False
             if self.board.checkFull(): # 消行帧
-                self.reviewData.chessboardData['middleboard'] = True
-                self.reviewData.chessboardData['action'] = action
-                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
-                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
-                self.saveToReviewData()
+                full = True
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
@@ -264,6 +261,14 @@ class Game:
             #把棋盘翻转回去
             self.board.reverse()
             self.visualBoard.reverse()
+
+            # 技术组心态炸了(2022/5/9)
+            if full:
+                self.reviewData.chessboardData['middleboard'] = True
+                self.reviewData.chessboardData['action'] = action
+                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
+                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
+                self.saveToReviewData()
 
             #连击结算
             if self.removeline:

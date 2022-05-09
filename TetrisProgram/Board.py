@@ -40,11 +40,11 @@ class Board:
         for x, y in block.showblock():
             self.list[y][x] = 1
     
-    def visualWriteIn(self,act,type):
+    def visualWriteIn(self,act,type,isFirst):
         block = Block.Block(type, act[2])
         block.move(act[1], act[0])
         for x, y in block.showblock():
-            self.list[y][x] = type
+            self.list[y][x] = type if isFirst else -type # 区分先后手的落块
 
     def reverse(self):
         for row in self.list:
@@ -53,3 +53,9 @@ class Board:
 
     def clear(self):
         self.list=[[0 for i in range(10)] for i in range(25)]
+    
+    def checkFull(self): #用于检测是否需要消行
+        for l in self.list:
+            if not 0 in l:
+                return True
+        return False

@@ -31,27 +31,27 @@ def import_by_name(player_name, is_first):
 
 
 class Game:
-    def __init__(self, teamfirst, teamlast, limit = 9999):
+    def __init__(self, teamfirst, teamlast, limit = 9999): # limit是每回合时间限制,team是玩家队伍和文件名
+
         #创建一个供玩家调用数据和方法的类
         self.matchdata = MatchData.MatchData()
-        #定义游戏类的各种属性，limit是每回合时间限制，team是玩家队伍和文件名
-        self.block = -1    #本回合方块
+
+        #定义游戏类的各种属性
+        self.block = -1 # 本回合方块,初始化为 -1
         self.teamname = [teamfirst,teamlast]
         self.state = "gaming"
-        self.time1 = limit    #玩家1剩余时间
-        self.time2 = limit    #玩家2剩余时间
-        self.board = Board.Board(PeaceAreaWidth, BattleAreaWidth)    #棋盘
-        self.visualBoard = Board.Board(PeaceAreaWidth, BattleAreaWidth)    #用于pygame可视化
-        self.pack = Pack.Pack()    #全部块数
+        self.time1 = limit # 玩家1剩余时间
+        self.time2 = limit # 玩家2剩余时间
+        self.board = Board.Board(PeaceAreaWidth, BattleAreaWidth) # 棋盘
+        self.visualBoard = Board.Board(PeaceAreaWidth, BattleAreaWidth) # 用于可视化(pygame以及网页生成复盘数据)
+        self.pack = Pack.Pack() # 全部块
         self.winner = -1
         self.combo = 0
-        self.removeline = False     #用于战斗区连击判定
-        self.point1 = 0    #玩家1得分
-        self.point2 = 0    #玩家2得分
+        self.removeline = False # 用于战斗区连击判定
+        self.point1 = 0 # 玩家1得分
+        self.point2 = 0 # 玩家2得分
         self.player = []
-        self.time = 0    #游戏进行轮次(并非回合数!!!)
-        self.pcleartimes = [0,0,0,0,0]
-        self.bcleartimes = [0,0,0,0,0]
+        self.time = 0 # 游戏进行轮次(并非回合数!!!)
         self.combocount = 0
         self.isFirst = 0
         self.round = 0
@@ -124,7 +124,7 @@ class Game:
             self.round += 1
             #p1 有效落块位置
             validpos = self.matchdata.getAllValidAction(self.block, self.board.list)
-            if len(validpos)==0:    #p1 无路可走,溢出
+            if len(validpos) == 0:    #p1 无路可走,溢出
                 self.state = 'p1 overflow'
                 self.winner = 2
                 self.tag = 'p1 被塞爆了'
@@ -166,17 +166,25 @@ class Game:
                 self.tag = 'p1 非法落块'
                 return None
 
-            #清理满行
-            if self.board.checkFull(): # 消行帧
-                self.reviewData.chessboardData['middleboard'] = True
-                self.reviewData.chessboardData['action'] = action
-                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action)
-                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
-                self.saveToReviewData()
-            peaceline, battleline, empty = self.board.erase()
+            # 保存消行前帧
+            self.reviewData.chessboardData['isFirst'] = True
+            self.reviewData.chessboardData['middleboard'] = True
+            self.reviewData.chessboardData['action'] = action
+            self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,True)
+            self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
+            self.saveToReviewData()
+
+            #计算得分
+            peaceline, battleline = self.board.erase()
             self.visualBoard.erase()
-            self.pcleartimes[peaceline]+=1
-            self.bcleartimes[battleline]+=1
+
+            # 保存消行后帧
+            self.reviewData.chessboardData['middleboard'] = False
+            self.reviewData.chessboardData['action'] = None
+            self.reviewData.chessboardData['newblock'] = None
+            self.reviewData.chessboardData['tag'] = self.roundtag
+            self.saveToReviewData()
+            self.roundtag = []
 
             #计算分数
             if battleline:
@@ -211,17 +219,14 @@ class Game:
             T1 = time.time()
             try:
                 action = self.player[1].output(self.matchdata)
-            
             except Exception:    #p2 程序出错
                 print("p2 ai error!")
                 self.state = 'p2 error'
                 self.winner = 1
                 self.tag = 'p2 程序出错'
                 return None
-            
             T2 = time.time()
             
-
             #时间判定
             if self.time2 < T2-T1:    #p2 超时
                 print("p2 ai overtime")
@@ -242,15 +247,29 @@ class Game:
                 self.tag = 'p2 非法落块'
                 return None
 
-            #清理满行
-            full = False
-            if self.board.checkFull(): # 消行帧
-                full = True
-            peaceline, battleline, empty = self.board.erase()
-            self.visualBoard.erase()
-            self.pcleartimes[peaceline]+=1
-            self.bcleartimes[battleline]+=1
+            # 保存消行前帧
+            self.visualBoard.reverse()
+            self.reviewData.chessboardData['isFirst'] = False
+            self.reviewData.chessboardData['middleboard'] = True
+            self.reviewData.chessboardData['action'] = action
+            self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
+            self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
+            self.saveToReviewData()
+            self.visualBoard.reverse()
 
+            #计算得分
+            peaceline, battleline = self.board.erase()
+            self.visualBoard.erase()
+
+            # 保存消行后帧
+            self.visualBoard.reverse()
+            self.reviewData.chessboardData['middleboard'] = False
+            self.reviewData.chessboardData['action'] = None
+            self.reviewData.chessboardData['newblock'] = None
+            self.reviewData.chessboardData['tag'] = self.roundtag
+            self.saveToReviewData()
+            self.roundtag = []
+            
             #计算分数
             if battleline:
                 self.removeline = True
@@ -260,15 +279,6 @@ class Game:
 
             #把棋盘翻转回去
             self.board.reverse()
-            self.visualBoard.reverse()
-
-            # 技术组心态炸了(2022/5/9)
-            if full:
-                self.reviewData.chessboardData['middleboard'] = True
-                self.reviewData.chessboardData['action'] = action
-                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
-                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
-                self.saveToReviewData()
 
             #连击结算
             if self.removeline:
@@ -304,15 +314,6 @@ class Game:
                 else:
                     self.roundtag.append('p2 {}消'.format(peaceline + battleline))
 
-        # 保存复盘数据
-        self.reviewData.chessboardData['middleboard'] = False
-        self.reviewData.chessboardData['tag'] = self.roundtag
-        if not (peaceline or battleline): # 非消行后帧
-            self.reviewData.chessboardData['action'] = action
-            self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,self.time%2)
-        self.saveToReviewData()
-        self.roundtag = [] # 清空roundtag
-
 
     #游戏结束的广播
     def end(self):
@@ -340,7 +341,7 @@ if __name__ == "__main__":
     import os
     os.chdir(os.path.dirname(__file__))
 
-    play = Game("stupidAI1","stupidAI2",100)
+    play = Game("file1","file2",100)
     while play.state == "gaming":
         play.turn()
     play.end()

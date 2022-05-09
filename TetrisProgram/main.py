@@ -340,7 +340,7 @@ if __name__ == "__main__":
     import os
     os.chdir(os.path.dirname(__file__))
 
-    play = Game("file1","file2",100)
+    play = Game("stupidAI1","stupidAI2",100)
     while play.state == "gaming":
         play.turn()
     play.end()

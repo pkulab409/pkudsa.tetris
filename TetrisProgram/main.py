@@ -98,7 +98,6 @@ class Game:
 
     # 记录复盘数据
     def saveToReviewData(self):
-        self.reviewData.time = self.time
         self.reviewData.chessboardData['round'] = (self.time + 1)//2
         self.reviewData.chessboardData['board'] = copy.deepcopy(self.visualBoard.list)
         self.reviewData.chessboardData['point1'] = self.point1
@@ -173,6 +172,7 @@ class Game:
                 self.reviewData.chessboardData['action'] = action
                 self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action)
                 self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
+                self.saveToReviewData()
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
@@ -248,6 +248,7 @@ class Game:
                 self.reviewData.chessboardData['action'] = action
                 self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
                 self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
+                self.saveToReviewData()
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
@@ -299,12 +300,12 @@ class Game:
                     self.roundtag.append('p2 {}消'.format(peaceline + battleline))
 
         # 保存复盘数据
-        self.saveToReviewData()
         self.reviewData.chessboardData['middleboard'] = False
         self.reviewData.chessboardData['tag'] = self.roundtag
         if not (peaceline or battleline): # 非消行后帧
             self.reviewData.chessboardData['action'] = action
             self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,self.time%2)
+        self.saveToReviewData()
         self.roundtag = [] # 清空roundtag
 
 
@@ -334,7 +335,7 @@ if __name__ == "__main__":
     import os
     os.chdir(os.path.dirname(__file__))
 
-    play = Game("stupidAI1","stupidAI2",100)
+    play = Game("file1","file2",100)
     while play.state == "gaming":
         play.turn()
     play.end()

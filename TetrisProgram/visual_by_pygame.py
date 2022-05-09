@@ -92,7 +92,7 @@ class Wall():
                 if color:
 
                     #填充颜色
-                    pygame.draw.rect(screen, CUBE_COLORS[color - 1], (i * GRID_WIDTH, j * GRID_WIDTH, GRID_WIDTH, GRID_WIDTH))
+                    pygame.draw.rect(screen, CUBE_COLORS[abs(color) - 1], (i * GRID_WIDTH, j * GRID_WIDTH, GRID_WIDTH, GRID_WIDTH))
 
                     #绘制白边
                     pygame.draw.rect(screen, WHITE, (i * GRID_WIDTH, j * GRID_WIDTH, GRID_WIDTH, GRID_WIDTH), 2)
@@ -165,7 +165,7 @@ class Brick():
 
 
 #绘制场地并开始比赛
-agame = main.Game("player1","stupidAI2",100)
+agame = main.Game("stupidAI1","stupidAI2",100)
 w =  Wall()
 while agame.state == 'gaming':
 

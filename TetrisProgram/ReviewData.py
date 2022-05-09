@@ -30,6 +30,7 @@ class ReviewData:
 
     def saveToData(self):
         self.gameData['matchData'][self.time] = copy.deepcopy(self.chessboardData)
+        self.time += 1
 
     def save(self):
         folderPath = os.path.join(os.path.dirname(__file__),'review data/')

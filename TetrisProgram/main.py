@@ -98,7 +98,6 @@ class Game:
 
     # 记录复盘数据
     def saveToReviewData(self):
-        self.reviewData.time = self.time
         self.reviewData.chessboardData['round'] = (self.time + 1)//2
         self.reviewData.chessboardData['board'] = copy.deepcopy(self.visualBoard.list)
         self.reviewData.chessboardData['point1'] = self.point1
@@ -173,6 +172,7 @@ class Game:
                 self.reviewData.chessboardData['action'] = action
                 self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action)
                 self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
+                self.saveToReviewData()
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
@@ -243,11 +243,9 @@ class Game:
                 return None
 
             #清理满行
+            full = False
             if self.board.checkFull(): # 消行帧
-                self.reviewData.chessboardData['middleboard'] = True
-                self.reviewData.chessboardData['action'] = action
-                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
-                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
+                full = True
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
@@ -263,6 +261,14 @@ class Game:
             #把棋盘翻转回去
             self.board.reverse()
             self.visualBoard.reverse()
+
+            # 技术组心态炸了(2022/5/9)
+            if full:
+                self.reviewData.chessboardData['middleboard'] = True
+                self.reviewData.chessboardData['action'] = action
+                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
+                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
+                self.saveToReviewData()
 
             #连击结算
             if self.removeline:
@@ -299,6 +305,11 @@ class Game:
                     self.roundtag.append('p2 {}消'.format(peaceline + battleline))
 
         # 保存复盘数据
+        self.reviewData.chessboardData['middleboard'] = False
+        self.reviewData.chessboardData['tag'] = self.roundtag
+        if not (peaceline or battleline): # 非消行后帧
+            self.reviewData.chessboardData['action'] = action
+            self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,self.time%2)
         self.saveToReviewData()
         self.reviewData.chessboardData['middleboard'] = False
         self.reviewData.chessboardData['tag'] = self.roundtag

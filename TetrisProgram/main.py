@@ -4,6 +4,7 @@ import time
 import MatchData
 import copy
 import ReviewData
+import Block
 
 #奖励字典
 peacepoint = {0:0,1:0,2:1,3:2,4:4}
@@ -170,6 +171,7 @@ class Game:
             if self.board.checkFull(): # 消行帧
                 self.reviewData.chessboardData['middleboard'] = True
                 self.reviewData.chessboardData['action'] = action
+                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action)
                 self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
@@ -241,8 +243,11 @@ class Game:
                 return None
 
             #清理满行
-            if self.board.checkFull():
-                self.reviewData.chessboardData['middleboard'] = copy.deepcopy(self.visualBoard.list)
+            if self.board.checkFull(): # 消行帧
+                self.reviewData.chessboardData['middleboard'] = True
+                self.reviewData.chessboardData['action'] = action
+                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
+                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
             peaceline, battleline, empty = self.board.erase()
             self.visualBoard.erase()
             self.pcleartimes[peaceline]+=1
@@ -299,6 +304,7 @@ class Game:
         self.reviewData.chessboardData['tag'] = self.roundtag
         if not (peaceline or battleline): # 非消行后帧
             self.reviewData.chessboardData['action'] = action
+            self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,self.time%2)
         self.roundtag = [] # 清空roundtag
 
 

@@ -169,12 +169,13 @@ class Game:
             self.reviewData.chessboardData['middleboard'] = True
             self.reviewData.chessboardData['action'] = action
             self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,True)
+            self.reviewData.chessboardData['stolenLines'] = None
             self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
             self.saveToReviewData()
 
             # 更新棋盘
             peaceline, battleline = self.board.erase()
-            self.visualBoard.eraseVisual()
+            stolenLines = self.visualBoard.eraseVisual()
 
             # 添加回合标签
             if peaceline + battleline >= 3:
@@ -184,6 +185,7 @@ class Game:
             self.reviewData.chessboardData['middleboard'] = False
             self.reviewData.chessboardData['action'] = None
             self.reviewData.chessboardData['newblock'] = None
+            self.reviewData.chessboardData['stolenLines'] = stolenLines
             self.reviewData.chessboardData['tag'] = self.roundtag
             self.saveToReviewData()
             self.roundtag = []
@@ -253,13 +255,14 @@ class Game:
             self.reviewData.chessboardData['middleboard'] = True
             self.reviewData.chessboardData['action'] = action
             self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
+            self.reviewData.chessboardData['stolenLines'] = None
             self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
             self.saveToReviewData()
             self.visualBoard.reverse()
 
             # 更新棋盘
             peaceline, battleline = self.board.erase()
-            self.visualBoard.eraseVisual()
+            stolenLines = self.visualBoard.eraseVisual()
 
             # 添加回合标签(多消)
             if peaceline + battleline >= 3:
@@ -294,6 +297,7 @@ class Game:
             self.reviewData.chessboardData['middleboard'] = False
             self.reviewData.chessboardData['action'] = None
             self.reviewData.chessboardData['newblock'] = None
+            self.reviewData.chessboardData['stolenLines'] = stolenLines
             self.reviewData.chessboardData['tag'] = self.roundtag
             self.saveToReviewData()
             self.roundtag = []

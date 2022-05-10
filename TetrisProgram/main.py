@@ -182,6 +182,13 @@ class Game:
                 self.roundtag.append('p1 {}消'.format(peaceline + battleline))
             if stolenLines:
                 self.roundtag.append('p1 偷消')
+            
+            # 计算分数
+            if battleline:
+                self.removeline = True
+                self.point1 += battlepoint[battleline] + peacepoint[peaceline] +  self.combo
+            else:
+                self.point1 += peacepoint[peaceline]
 
             # 保存消行后帧
             self.reviewData.chessboardData['middleboard'] = False
@@ -191,13 +198,6 @@ class Game:
             self.reviewData.chessboardData['tag'] = self.roundtag
             self.saveToReviewData()
             self.roundtag = []
-
-            # 计算分数
-            if battleline:
-                self.removeline = True
-                self.point1 += battlepoint[battleline] + peacepoint[peaceline] +  self.combo
-            else:
-                self.point1 += peacepoint[peaceline]
 
 
         else: # 后手玩家操作
@@ -264,7 +264,7 @@ class Game:
 
             # 更新棋盘
             peaceline, battleline = self.board.erase()
-            stolenLines = self.visualBoard.eraseVisual()
+            stolenLines = self.visualBoard.eraseVisual(False)
 
             # 添加回合标签(多消,偷消)
             if peaceline + battleline >= 3:
@@ -296,6 +296,13 @@ class Game:
             if self.combo > 3:
                 self.roundtag.append('本回合已经{}连消！'.format(self.combo))
 
+            #计算分数
+            if battleline:
+                self.removeline = True
+                self.point2 += battlepoint[battleline] + peacepoint[peaceline] +  self.combo
+            else:
+                self.point2 += peacepoint[peaceline]
+            
             # 保存消行后帧
             self.visualBoard.reverse()
             self.reviewData.chessboardData['middleboard'] = False
@@ -306,13 +313,6 @@ class Game:
             self.saveToReviewData()
             self.roundtag = []
             
-            #计算分数
-            if battleline:
-                self.removeline = True
-                self.point2 += battlepoint[battleline] + peacepoint[peaceline] +  self.combo
-            else:
-                self.point2 += peacepoint[peaceline]
-
             #把棋盘翻转回去
             self.board.reverse()
 

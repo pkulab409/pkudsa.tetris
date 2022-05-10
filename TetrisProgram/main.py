@@ -163,6 +163,9 @@ class Game:
                 self.winner = 2
                 self.tag = 'p1 非法落块'
                 return None
+            
+            # 将action存入matchdata,以便后手玩家直接调用
+            self.matchdata.action = action
 
             # 保存消行前帧
             self.reviewData.chessboardData['isFirst'] = True
@@ -250,6 +253,9 @@ class Game:
                 self.winner = 1
                 self.tag = 'p2 非法落块'
                 return None
+            
+            # 将action存入matchdata,以便先手玩家直接调用
+            self.matchdata.action = action
 
             # 保存消行前帧
             self.visualBoard.reverse()

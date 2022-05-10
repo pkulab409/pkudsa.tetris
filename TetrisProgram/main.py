@@ -169,7 +169,7 @@ class Game:
             self.reviewData.chessboardData['middleboard'] = True
             self.reviewData.chessboardData['action'] = action
             self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,True)
-            self.reviewData.chessboardData['stolenLines'] = None
+            self.reviewData.chessboardData['stolenLines'] = []
             self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
             self.saveToReviewData()
 
@@ -257,7 +257,7 @@ class Game:
             self.reviewData.chessboardData['middleboard'] = True
             self.reviewData.chessboardData['action'] = action
             self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
-            self.reviewData.chessboardData['stolenLines'] = None
+            self.reviewData.chessboardData['stolenLines'] = []
             self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
             self.saveToReviewData()
             self.visualBoard.reverse()

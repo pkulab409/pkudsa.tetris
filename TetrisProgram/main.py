@@ -177,9 +177,11 @@ class Game:
             peaceline, battleline = self.board.erase()
             stolenLines = self.visualBoard.eraseVisual()
 
-            # 添加回合标签
+            # 添加回合标签(多消,偷消)
             if peaceline + battleline >= 3:
                 self.roundtag.append('p1 {}消'.format(peaceline + battleline))
+            if stolenLines:
+                self.roundtag.append('p1 偷消')
 
             # 保存消行后帧
             self.reviewData.chessboardData['middleboard'] = False
@@ -264,10 +266,12 @@ class Game:
             peaceline, battleline = self.board.erase()
             stolenLines = self.visualBoard.eraseVisual()
 
-            # 添加回合标签(多消)
+            # 添加回合标签(多消,偷消)
             if peaceline + battleline >= 3:
-                self.roundtag.append('p1 {}消'.format(peaceline + battleline))
-            
+                self.roundtag.append('p2 {}消'.format(peaceline + battleline))
+            if stolenLines:
+                self.roundtag.append('p2 偷消')
+
             # 添加回合标签(分数变化,连消)
             higherscorer = self.higherscorer
             if self.point1 > self.point2:

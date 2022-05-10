@@ -22,12 +22,12 @@ class ReviewData:
                                 }
 
         self.gameData = {
-                        'player1' : player1,    # 先手玩家名称
-                        'player2' : player2,    # 后手玩家名称
-                        'winner' : None,    # 1代表先手, 2代表后手, '平局'是平局
-                        'reason' : None,    # 游戏结束原因
-                        'tag' : None,    #本场比赛标签
-                        'matchData' : dict()    # 每回合数据
+                        'player1' : player1, # 先手玩家名称
+                        'player2' : player2, # 后手玩家名称
+                        'winner' : None, # 1代表先手, 2代表后手, '平局'是平局
+                        'reason' : None, # 游戏结束原因
+                        'tag' : None, #本场比赛标签
+                        'matchData' : dict() # 每回合数据
                         }
 
     def saveToData(self):

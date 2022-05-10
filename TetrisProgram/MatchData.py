@@ -40,6 +40,7 @@ class MatchData:
         self.point1 = None
         self.point2 = None
         self.combo = None
+        self.action = None
 
     
     def getAllValidActionRepeating(self, type, board): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
@@ -157,7 +158,7 @@ class MatchData:
         block.y = action[0]
         block.x = action[1]
         for x , y in block.showblock():
-            board[y][x] = block.type
+            board[y][x] = 1
         return board
         
     def getCells(self,type,action):
@@ -194,3 +195,6 @@ class MatchData:
             i.revserse()
         board.reverse()
         return board
+    
+    def getLastAction(self):
+        return self.action

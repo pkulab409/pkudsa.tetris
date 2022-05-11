@@ -57,6 +57,7 @@ class Game:
         self.tag = None # 单局标签
         self.roundtag = [] # 回合标签
         self.higherscorer = None # 分数领先者 用于判断反超 便于添加tag
+        self.high= None
         
         # 复盘数据
         self.reviewData = ReviewData.ReviewData(teamfirst, teamlast)
@@ -187,8 +188,6 @@ class Game:
             # 添加回合标签(多消,偷消)
             if peaceline + battleline >= 3:
                 self.roundtag.append('p1 {}消'.format(peaceline + battleline))
-            if self.reviewData.chessboardData['stolenLines']:
-                self.roundtag.append('p1 偷消')
             
             # 计算分数
             if battleline:
@@ -267,7 +266,7 @@ class Game:
             self.reviewData.chessboardData['middleboard'] = True
             self.reviewData.chessboardData['action'] = action
             self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
-            self.reviewData.chessboardData['stolenLines'] = self.visualBoard.checkStolenLines()
+            self.reviewData.chessboardData['stolenLines'] = self.visualBoard.checkStolenLines(False)
             
             if self.reviewData.chessboardData['stolenLines']:
                 self.roundtag.append('p2 偷消')
@@ -299,12 +298,14 @@ class Game:
             else:
                 if self.higherscorer == -1:
                     if higherscorer == -1:
-                        pass # 持续追平
+                        self.roundtag.append('双方僵持')
                     else:
                         self.roundtag.append('p{} 追平'.format(1 if higherscorer == 2 else 2))
                 else:
-                    if higherscorer != self.higherscorer:
+                    if higherscorer != self.higherscorer and higherscorer!=self.high and self.high != None:
                         self.roundtag.append('p{} 反超'.format(self.higherscorer))
+            if self.higherscorer!=-1:
+                self.high=self.higherscorer
             
             if self.combo > 3:
                 self.roundtag.append('本回合已经{}连消！'.format(self.combo))

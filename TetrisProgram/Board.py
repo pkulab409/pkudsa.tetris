@@ -92,6 +92,6 @@ class Board:
                 if isFirst and k <= 3:
                     stolenLines.append(i)
                 elif not isFirst and k >= 7:
-                    stolenLines.append(24 - i)
+                    stolenLines.append(i)
 
         return stolenLines

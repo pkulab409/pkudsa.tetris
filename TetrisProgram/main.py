@@ -57,7 +57,8 @@ class Game:
         self.tag = None # 单局标签
         self.roundtag = [] # 回合标签
         self.higherscorer = None # 分数领先者 用于判断反超 便于添加tag
-        self.high= None
+        self.high = None
+        self.hold = True
         
         # 复盘数据
         self.reviewData = ReviewData.ReviewData(teamfirst, teamlast)
@@ -69,19 +70,19 @@ class Game:
             self.winner = 2
             print("p1 ai missing")
             self.state = "judge to end"
-            self.tag = "p1 ai missing"
+            self.tag = "p1 ai 丢失"
         try:
             self.player.append(import_by_name(teamlast, False))
         except:
             if self.state == "judge to end":
                 print("p2 ai missing")
                 self.winner = -1
-                self.tag = "both ai missing"
+                self.tag = "both ai 丢失"
             else:
                 self.winner = 1
                 self.state = "judge to end"
                 print("p2 ai missing")
-                self.tag = "p2 ai missing"
+                self.tag = "p2 ai 丢失"
     
 
     # 同步用户可调用数据
@@ -177,6 +178,8 @@ class Game:
             
             if self.reviewData.chessboardData['stolenLines']:
                 self.roundtag.append('p1 偷消')
+            if self.hold = True
+            self.roundtag.append("僵持")
                 
             self.reviewData.chessboardData['tag'] = self.roundtag
             self.saveToReviewData()
@@ -267,6 +270,8 @@ class Game:
             self.reviewData.chessboardData['action'] = action
             self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
             self.reviewData.chessboardData['stolenLines'] = self.visualBoard.checkStolenLines(False)
+            if self.hold == True:
+                self.roundtag.append("僵持")
             
             if self.reviewData.chessboardData['stolenLines']:
                 self.roundtag.append('p2 偷消')
@@ -285,6 +290,7 @@ class Game:
             
 
             # 添加回合标签(分数变化,连消)
+            self.hold=False
             higherscorer = self.higherscorer
             if self.point1 > self.point2:
                 self.higherscorer = 1
@@ -298,7 +304,7 @@ class Game:
             else:
                 if self.higherscorer == -1:
                     if higherscorer == -1:
-                        self.roundtag.append('双方僵持')
+                        self.hold=True
                     else:
                         self.roundtag.append('p{} 追平'.format(1 if higherscorer == 2 else 2))
                 else:
@@ -352,6 +358,17 @@ class Game:
         print("分数",self.point1, self.point2)
         print("游戏结束原因是",self.state)
         print(self.time)
+        self.tag.append(self.winner)
+        self.tag.append(self.time)
+        diff = abs(self.point1-self.point2)
+        if diff>150:
+            self.tag.append("完胜")
+        elif diff>80:
+            self.tag.append("大胜")
+        elif diff<20:
+            self.tag.append("小胜")
+        elif 0<diff<5:
+            self.tag.append("险胜")
 
         # 保存复盘数据
         self.reviewData.gameData['winner'] = self.winner
@@ -362,7 +379,7 @@ class Game:
 
 if __name__ == "__main__":
     import os
-    os.chdir(os.path.dirname(__file__))
+    # os.chdir(os.path.dirname(__file__))
 
     play = Game("stupidAI1","stupidAI2",100)
     while play.state == "gaming":

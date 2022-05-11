@@ -13,11 +13,10 @@ class ReviewData:
                                 'point2' : None, # 后手当前总得分(消行前帧为消行前得分)
                                 'combo' : None, # 战斗区目前连消次数(消行前帧为消行前连消次数)
                                 'currentBlock' : None, # 当前回合块
-
                                 'middleboard' : None, # 是否为补帧(即消行前帧) True表示是补帧,False表示不是
                                 'action' : None, # 本回合玩家操作(此项对于消行后帧无意义)
                                 'newblock' : None, # 由落块的四个格子坐标构成的list(此项对于消行后帧无意义)
-                                'stolenLines' : None, # 偷行(此项对于消行后帧无意义)
+                                'stolenLines' : [], # 偷行(此项对于消行后帧无意义)
                                 'tag' : [], # 本回合标签(此项对于消行前帧无意义)
                                 }
 

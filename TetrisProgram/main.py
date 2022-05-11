@@ -1,5 +1,3 @@
-from audioop import add
-from wsgiref import validate
 import Board
 import Pack
 import time
@@ -34,10 +32,7 @@ def import_by_name(player_name, is_first):
 
 class Game:
     def __init__(self, teamfirst, teamlast, limit = 9999): # limit是每回合时间限制,team是玩家队伍和文件名
-
-        #创建一个供玩家调用数据和方法的类
-        self.matchdata = MatchData.MatchData()
-
+        self.matchdata = MatchData.MatchData() #创建一个供玩家调用数据和方法的类
         #定义游戏类的各种属性
         self.block = -1 # 本回合方块,初始化为 -1
         self.teamname = [teamfirst,teamlast]
@@ -61,9 +56,10 @@ class Game:
         self.previousLeader = 0 # 分数领先者 用于判断反超 便于添加tag
         self.hold = False
         self.holdStartTime = 0
-        
-        # 复盘数据
-        self.reviewData = ReviewData.ReviewData(teamfirst, teamlast)
+        self.reviewData = ReviewData.ReviewData(teamfirst, teamlast) # 复盘数据
+        self.stolenNum = 0
+        self.overtakeNum = 0
+        self.maxCombo = 0
 
         # 读入玩家程序,读不到判负
         try:
@@ -72,22 +68,25 @@ class Game:
             self.winner = 2
             print("p1 ai missing")
             self.state = "judge to end"
-            self.tag.append("p1 ai missing")
+            self.tag.append(["p1 ai missing", "grey"])
+            self.reviewData.gameData["reason"] = "对方失踪"
         try:
             self.player.append(import_by_name(teamlast, False))
         except:
             if self.state == "judge to end":
                 print("p2 ai missing")
                 self.winner = -1
-                self.tag.append("both ai missing")
+                self.tag.append(["both ai missing", "grey"])
             else:
                 self.winner = 1
                 self.state = "judge to end"
                 print("p2 ai missing")
-                self.tag.append("p2 ai missing")
+                self.tag.append(["p2 ai missing", "grey"])
+                self.reviewData.gameData["reason"] = "对方失踪"
     
     # 同步用户可调用数据
     def updateData(self):
+        self.matchdata.isFirst = self.isFirst
         self.matchdata.block = self.block
         self.matchdata.time1 = self.time1
         self.matchdata.time2 = self.time2
@@ -114,26 +113,27 @@ class Game:
         validAction = self.matchdata.getAllValidActionRepeating(self.block, self.board.list)
         # 无路可走,溢出
         if len(validAction) == 0:
-            self.state = 'p{:d} overflow'.format(player)
+            self.state = 'p{} overflow'.format(player)
             self.winner = 2 if self.isFirst else 1
-            self.tag.append('p{:d} 被塞爆了'.format(player))
+            self.tag.append(["塞爆!", "purple"])
+            self.reviewData.gameData["reason"] = "对方溢出"
         return validAction
 
     # 运行玩家函数
     def runPlayerFunc(self, validAction):
         player = 1 if self.isFirst else 2
         # 更新matchdata, 准备发送给player
-        self.matchdata.isFirst = self.isFirst
         self.updateData()
         # 开始决策, 计时开始
         T1 = time.time()
         try:
             action = self.player[player - 1].output(self.matchdata)
         except Exception: # 程序出错
-            print("p{:d} ai error!".format(player))
-            self.state = 'p{:d} error'.format(player)
+            print("p{} ai error!".format(player))
+            self.state = 'p{} error'.format(player)
             self.winner = 2 if self.isFirst else 1
-            self.tag.append('p{:d} 程序出错'.format(player))
+            self.tag.append(["p{} 程序出错".format(player), "grey"])
+            self.reviewData.gameData["reason"] = "对方出错"
             return None
         T2 = time.time() # 决策结束, 计时结束
     
@@ -141,10 +141,11 @@ class Game:
         timeLeft = self.time1 if self.isFirst else self.time2
         if timeLeft < T2 - T1:
             # 超时
-            print("p{:d} ai overtime".format(player))
-            self.state = 'p{:d} overtime'.format(player)
+            print("p{} ai overtime".format(player))
+            self.state = 'p{} overtime'.format(player)
             self.winner = 2 if self.isFirst else 1
-            self.tag.append('p{:d} 超时'.format(player))
+            self.tag.append(["p{} 超时".format(player), "grey"])
+            self.reviewData.gameData["reason"] = "对方超时"
             return None
         else:
             timeLeft -= T2 - T1
@@ -157,10 +158,11 @@ class Game:
             self.visualBoard.visualWriteIn(action, self.block, self.isFirst)
         else:
             # 非法落块
-            print("p{:d} ai illegal".format(player))
+            print("p{} ai illegal".format(player))
             self.state = "judge to end"
             self.winner = 2 if self.isFirst else 1
-            self.tag.append('p{:d} 非法落块'.format(player))
+            self.tag.append(["p{} 非法落块".format(player), "grey"])
+            self.reviewData.gameData["reason"] = "对方非法落块"
             return None
         return action
 
@@ -171,9 +173,11 @@ class Game:
         self.reviewData.chessboardData['middleboard'] = True
         self.reviewData.chessboardData['action'] = action
         self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action, self.isFirst)
-        self.reviewData.chessboardData['stolenLines'] = self.visualBoard.checkStolenLines(self.isFirst)
-        if self.reviewData.chessboardData['stolenLines']:
-            self.roundtag.append('p{:d} 偷消'.format(player))
+        stolenLines = self.visualBoard.checkStolenLines(self.isFirst)
+        self.stolenNum += len(stolenLines)
+        self.reviewData.chessboardData['stolenLines'] = stolenLines
+        if len(stolenLines):
+            self.roundtag.append('p{} 偷消'.format(player))
         if self.hold:
             self.roundtag.append('僵持')
         self.reviewData.chessboardData['tag'] = self.roundtag
@@ -185,7 +189,7 @@ class Game:
         peaceline, battleline = self.board.erase() # 更新棋盘
         self.visualBoard.eraseVisual()
         if peaceline + battleline >= 3: # 添加回合标签(多消,偷消)
-            self.roundtag.append('p{:d} {}消'.format(player, peaceline + battleline))
+            self.roundtag.append('p{} {}消'.format(player, peaceline + battleline))
         additionalPoint = 0
         if battleline:
             self.removeline = True
@@ -197,6 +201,7 @@ class Game:
             if self.removeline: self.combo += 1
             else: self.combo = 0
             self.removeline = False
+        if self.combo > self.maxCombo: self.maxCombo = self.combo
 
     # 保存消行后帧
     def saveFrameAfterErase(self):
@@ -209,16 +214,17 @@ class Game:
             else:
                 self.holdStartTime = self.time
             if self.previousLeader:
-                self.roundtag.append('p{:d} 追平'.format(player))
+                self.roundtag.append('p{} 追平'.format(player))
         else:
             self.holdStartTime = 0
             if self.point1 > self.point2: leader = 1
             else: leader = 2
-            if self.previousLeader != leader:
-                self.roundtag.append('p{:d} 反超'.format(player))
-                self.previousLeader = leader
-        
-        if self.hold: self.roundtag.append('僵持')
+            if self.previousLeader:
+                if self.previousLeader != leader:
+                    self.roundtag.append('p{} 反超'.format(player))
+                    self.previousLeader = leader
+                    self.overtakeNum += 1
+            else: self.previousLeader = leader
         if self.combo > 3:
             self.roundtag.append('本回合已经{}连消！'.format(self.combo))
         self.reviewData.chessboardData['middleboard'] = False
@@ -234,6 +240,7 @@ class Game:
         self.time += 1
         if self.time == 560:
             self.state = "round limit" # 达到回合数上限
+            self.reviewData.gameData["reason"] = "得分统计"
         self.block = self.pack.get(self.time) # 取出下一块
         
         if self.time % 2 == 1: # 先手玩家操作
@@ -270,38 +277,35 @@ class Game:
     def end(self):
         print("本局游戏结束")
         if self.state == 'round limit':
-            if self.point1 > self.point2:
-                self.winner = "p1"
-            elif self.point1 < self.point2:
-                self.winner = "p2"
-            else:
-                self.winner = "平局"
+            if self.point1 > self.point2: self.winner = 1
+            elif self.point1 < self.point2: self.winner = 2
+            else: self.winner = "平局"
         print("胜者是",self.winner)
         print("分数",self.point1, self.point2)
-        print("游戏结束原因是",self.state)
+        print("游戏结束原因是", self.state)
         print(self.time)
-        self.tag.append(self.winner)
-        self.tag.append('共计{}步！'.format(self.time))
-        diff = abs(self.point1-self.point2)
-        if diff>150:
-            self.tag.append("完胜")
-        elif diff>80:
-            self.tag.append("大胜")
-        elif diff<20:
-            self.tag.append("小胜")
-        elif 0<diff<5:
-            self.tag.append("险胜")
+        diff = abs(self.point1 - self.point2)
+        if diff >= 100: self.tag.append(["完胜", "green"])
+        elif diff >= 50: self.tag.append(["大胜", "green"])
+        # elif diff >= 5: self.tag.append(["小胜", "green"])
+        elif 0 < diff < 5: self.tag.append(["险胜", "green"])
+        if self.stolenNum >= 6:
+            self.tag.append(["偷鸡摸狗!", "red"])
+        if self.overtakeNum >= 3:
+            self.tag.append(["十分胶着!", "orange"])
+        if self.maxCombo >= 6:
+            self.tag.append(["{}连消!".format(self.maxCombo), "blue"])
+        self.tag.append(["{}回合".format(self.round)])
 
         # 保存复盘数据
         self.reviewData.gameData['winner'] = self.winner
         self.reviewData.gameData['tag'] = self.tag
-        self.reason = self.state
         self.reviewData.save()
 
 
 if __name__ == "__main__":
     import os
-    # os.chdir(os.path.dirname(__file__))
+    os.chdir(os.path.dirname(__file__))
 
     play = Game("stupidAI1","stupidAI2",100)
     while play.state == "gaming":

@@ -7,7 +7,6 @@ class Board:
         self.PeaceAreaWidth = PeaceAreaWidth
         self.BattleAreaWidth = BattleAreaWidth
 
-
     def erase(self):    #定义消去行的操作
         line1 = 0    #用于返回和平区消行数量
         line2 = 0    #用于返回战争区消行数量
@@ -37,7 +36,6 @@ class Board:
         block.move(x,y)
         for x, y in block.showblock():
             self.list[y][x] = 1
-    
 
     def visualWriteIn(self,act,type,isFirst):
         block = Block.Block(type, act[2])
@@ -45,23 +43,19 @@ class Board:
         for x, y in block.showblock():
             self.list[y][x] = type if isFirst else -type # 区分先后手的落块
 
-
     def reverse(self):
         for row in self.list:
             row.reverse()
         self.list.reverse()
 
-
     def clear(self):
         self.list=[[0 for i in range(10)] for i in range(25)]
     
-
     def checkFull(self): #用于检测是否需要消行
         for l in self.list:
             if not 0 in l:
                 return True
         return False
-    
 
     def eraseVisual(self): # 更新前端棋盘
 

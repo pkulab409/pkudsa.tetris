@@ -157,7 +157,7 @@ class MatchData:
         block = Block.Block(type,action[2])
         block.y = action[0]
         block.x = action[1]
-        for x , y in block.showblock():
+        for x, y in block.showblock():
             board[y][x] = 1
         return board
         

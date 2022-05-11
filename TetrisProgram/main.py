@@ -59,7 +59,6 @@ class Game:
         self.tag = [] # 单局标签
         self.roundtag = [] # 回合标签
         self.previousLeader = 0 # 分数领先者 用于判断反超 便于添加tag
-        self.high = None
         self.hold = False
         self.holdStartTime = 0
         
@@ -302,7 +301,7 @@ class Game:
 
 if __name__ == "__main__":
     import os
-    os.chdir(os.path.dirname(__file__))
+    # os.chdir(os.path.dirname(__file__))
 
     play = Game("stupidAI1","stupidAI2",100)
     while play.state == "gaming":

@@ -270,7 +270,7 @@ class Game:
 
             # 更新棋盘
             peaceline, battleline = self.board.erase()
-            self.visualBoard.eraseVisual(False)
+            self.visualBoard.eraseVisual()
 
             # 添加回合标签(多消,偷消)
             if peaceline + battleline >= 3:

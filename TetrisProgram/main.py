@@ -238,7 +238,7 @@ class Game:
         
         if self.time % 2 == 1: # 先手玩家操作
             self.round += 1
-            self.isFirst == True
+            self.isFirst = True
             validAction = self.checkValidAction()
             if len(validAction) == 0: return None
             action = self.runPlayerFunc(validAction)
@@ -250,7 +250,7 @@ class Game:
         else: # 后手玩家操作
             self.board.reverse() # 后手玩家需要翻转棋盘
             self.visualBoard.reverse()
-            self.isFirst == False
+            self.isFirst = False
             validAction = self.checkValidAction()
             if len(validAction) == 0: return None
             action = self.runPlayerFunc(validAction)

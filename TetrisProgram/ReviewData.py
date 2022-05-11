@@ -50,4 +50,4 @@ class ReviewData:
 
     def saveToPath(self, path):
         with open(path, 'w') as f:
-            json.dump(self.gameData, f, indent=4)
+            json.dump(self.gameData, f)

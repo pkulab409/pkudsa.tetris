@@ -10,10 +10,9 @@ class Board:
     def erase(self):    #定义消去行的操作
         line1 = 0    #用于返回和平区消行数量
         line2 = 0    #用于返回战争区消行数量
-        empty = False    #用于判断清空奖励(虽然在目前的版本规则里已经没有这一条了emmm.而且就目前的AI模拟情况来看,好像没人能清空?)
 
-        part1 = self.list[0:self.PeaceAreaWidth + self.BattleAreaWidth]
-        part2 = self.list[self.PeaceAreaWidth + self.BattleAreaWidth:self.PeaceAreaWidth*2 + self.BattleAreaWidth]
+        part1 = self.list[0 : self.PeaceAreaWidth + self.BattleAreaWidth]
+        part2 = self.list[self.PeaceAreaWidth + self.BattleAreaWidth : self.PeaceAreaWidth*2 + self.BattleAreaWidth]
         dellist = []
         for i in range(self.PeaceAreaWidth):
             if 0 not in part1[i]:
@@ -28,10 +27,8 @@ class Board:
 
         part1 = [[0 for i in range(10)] for j in range(line1 + line2)] + part1
         self.list = part1 + part2
-        if line2 == self.BattleAreaWidth:
-            empty = True
 
-        return (line1,line2,empty)
+        return (line1, line2)
 
 
     def writein(self,y,x,direction,type):    # 在某个块生效时写入到面板里
@@ -39,7 +36,7 @@ class Board:
         block.move(x,y)
         for x, y in block.showblock():
             self.list[y][x] = 1
-    
+
     def visualWriteIn(self,act,type,isFirst):
         block = Block.Block(type, act[2])
         block.move(act[1], act[0])
@@ -59,3 +56,34 @@ class Board:
             if not 0 in l:
                 return True
         return False
+
+    def eraseVisual(self): # 更新前端棋盘
+
+        part1 = self.list[0 : self.PeaceAreaWidth + self.BattleAreaWidth]
+        part2 = self.list[self.PeaceAreaWidth + self.BattleAreaWidth : self.PeaceAreaWidth*2 + self.BattleAreaWidth]
+        dellist = []
+        for i in range(self.PeaceAreaWidth + self.BattleAreaWidth):
+            if 0 not in part1[i]:
+                dellist.append(i)
+        n = len(dellist)
+        while dellist:
+            part1.pop(dellist.pop())
+
+        part1 = [[0 for i in range(10)] for j in range(n)] + part1
+        self.list = part1 + part2
+
+
+    def checkStolenLines(self, isFirst):
+        stolenLines = []
+        for i in range(self.PeaceAreaWidth, self.PeaceAreaWidth + self.BattleAreaWidth):
+            k = 0 # 先手方块数
+            for t in self.list[i]:
+                if t == 0: # 未满行,跳过
+                    break
+                elif t > 0:
+                    k += 1
+            else:
+                if (isFirst and k <= 3) or (not isFirst and k >= 7):
+                    stolenLines.append(i)
+
+        return stolenLines

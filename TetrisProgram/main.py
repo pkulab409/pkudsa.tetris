@@ -7,20 +7,20 @@ import ReviewData
 import Block
 
 #奖励字典
-peacepoint = {0:0,1:0,2:1,3:2,4:4}
-battlepoint = {0:0,1:1,2:2,3:4,4:8}
+peacepoint = {0:0, 1:0, 2:1, 3:2, 4:4}
+battlepoint = {0:0, 1:1, 2:2, 3:4, 4:8}
 
 #棋盘属性
 PeaceAreaWidth = 10    #和平区行数
 BattleAreaWidth = 5    #战斗区行数
 
-#先手玩家的编号是first，玩家2的编号是last
-#棋盘的左上角为坐标原点(0,0)
+#先手玩家的编号是first, 玩家2的编号是last
+#棋盘的左上角为坐标原点(0, 0)
 #七种方块的种类和角度按照规则文档提供,编号1~7
-#玩家需要实现一个ai类，ai类有两个方法：
-    #方法1：通过接受bool表示的是否先攻创建实例
-    #方法2：通过调取无变量函数"self.output()"给出元组：
-        #(y:int,x:int,position:int)
+#玩家需要实现一个ai类, ai类有两个方法:
+    #方法1: 通过接受bool表示的是否先攻创建实例
+    #方法2: 通过调取无变量函数"self.output()"给出元组:
+        #(y: int, x: int, position: int)
 
 
 # 分离import接口
@@ -31,61 +31,62 @@ def import_by_name(player_name, is_first):
 
 
 class Game:
-    def __init__(self, teamfirst, teamlast, limit = 9999):
-        #创建一个供玩家调用数据和方法的类
-        self.matchdata = MatchData.MatchData()
-        #定义游戏类的各种属性，limit是每回合时间限制，team是玩家队伍和文件名
-        self.block = -1    #本回合方块
+    def __init__(self, teamfirst, teamlast, limit = 9999): # limit是每回合时间限制,team是玩家队伍和文件名
+        self.matchdata = MatchData.MatchData() #创建一个供玩家调用数据和方法的类
+        #定义游戏类的各种属性
+        self.block = -1 # 本回合方块,初始化为 -1
         self.teamname = [teamfirst,teamlast]
         self.state = "gaming"
-        self.time1 = limit    #玩家1剩余时间
-        self.time2 = limit    #玩家2剩余时间
-        self.board = Board.Board(PeaceAreaWidth, BattleAreaWidth)    #棋盘
-        self.visualBoard = Board.Board(PeaceAreaWidth, BattleAreaWidth)    #用于pygame可视化
-        self.pack = Pack.Pack()    #全部块数
+        self.time1 = limit # 玩家1剩余时间
+        self.time2 = limit # 玩家2剩余时间
+        self.board = Board.Board(PeaceAreaWidth, BattleAreaWidth) # 棋盘
+        self.visualBoard = Board.Board(PeaceAreaWidth, BattleAreaWidth) # 用于可视化(pygame以及网页生成复盘数据)
+        self.pack = Pack.Pack() # 全部块
         self.winner = -1
         self.combo = 0
-        self.removeline = False     #用于战斗区连击判定
-        self.point1 = 0    #玩家1得分
-        self.point2 = 0    #玩家2得分
+        self.removeline = False # 用于战斗区连击判定
+        self.point1 = 0 # 玩家1得分
+        self.point2 = 0 # 玩家2得分
         self.player = []
-        self.time = 0    #游戏进行轮次(并非回合数!!!)
-        self.pcleartimes = [0,0,0,0,0]
-        self.bcleartimes = [0,0,0,0,0]
-        self.combocount = 0
+        self.time = 0 # 游戏进行轮次(并非回合数!!!)
         self.isFirst = 0
         self.round = 0
-        self.tag = None # 单局标签
+        self.tag = [] # 单局标签
         self.roundtag = [] # 回合标签
-        self.higherscorer = None # 分数领先者 用于判断反超 便于添加tag
-        
-        #复盘数据
-        self.reviewData = ReviewData.ReviewData(teamfirst, teamlast)
+        self.previousLeader = 0 # 分数领先者 用于判断反超 便于添加tag
+        self.hold = False
+        self.holdStartTime = 0
+        self.reviewData = ReviewData.ReviewData(teamfirst, teamlast) # 复盘数据
+        self.stolenNum = 0
+        self.overtakeNum = 0
+        self.maxCombo = 0
 
-        #读入玩家程序,读不到判负
+        # 读入玩家程序,读不到判负
         try:
             self.player.append(import_by_name(teamfirst, True))
         except:
             self.winner = 2
             print("p1 ai missing")
             self.state = "judge to end"
-            self.tag = "p1 ai missing"
+            self.tag.append(["p1 ai missing", "grey"])
+            self.reviewData.gameData["reason"] = "对方失踪"
         try:
             self.player.append(import_by_name(teamlast, False))
         except:
             if self.state == "judge to end":
                 print("p2 ai missing")
                 self.winner = -1
-                self.tag = "both ai missing"
+                self.tag.append(["both ai missing", "grey"])
             else:
                 self.winner = 1
                 self.state = "judge to end"
                 print("p2 ai missing")
-                self.tag = "p2 ai missing"
+                self.tag.append(["p2 ai missing", "grey"])
+                self.reviewData.gameData["reason"] = "对方失踪"
     
-
-    #同步用户可调用数据
+    # 同步用户可调用数据
     def updateData(self):
+        self.matchdata.isFirst = self.isFirst
         self.matchdata.block = self.block
         self.matchdata.time1 = self.time1
         self.matchdata.time2 = self.time2
@@ -106,238 +107,199 @@ class Game:
         self.reviewData.chessboardData['currentBlock'] = self.block
         self.reviewData.saveToData()
 
+    # 寻找有效落块位置
+    def checkValidAction(self):
+        player = 1 if self.isFirst else 2
+        validAction = self.matchdata.getAllValidActionRepeating(self.block, self.board.list)
+        # 无路可走,溢出
+        if len(validAction) == 0:
+            self.state = 'p{} overflow'.format(player)
+            self.winner = 2 if self.isFirst else 1
+            self.tag.append(["塞爆!", "purple"])
+            self.reviewData.gameData["reason"] = "对方溢出"
+        return validAction
 
-    #定义每个回合都要进行的游戏
+    # 运行玩家函数
+    def runPlayerFunc(self, validAction):
+        player = 1 if self.isFirst else 2
+        # 更新matchdata, 准备发送给player
+        self.updateData()
+        # 开始决策, 计时开始
+        T1 = time.time()
+        try:
+            action = self.player[player - 1].output(self.matchdata)
+        except Exception: # 程序出错
+            print("p{} ai error!".format(player))
+            self.state = 'p{} error'.format(player)
+            self.winner = 2 if self.isFirst else 1
+            self.tag.append(["p{} 程序出错".format(player), "grey"])
+            self.reviewData.gameData["reason"] = "对方出错"
+            return None
+        T2 = time.time() # 决策结束, 计时结束
+    
+        # 时间判定
+        timeLeft = self.time1 if self.isFirst else self.time2
+        if timeLeft < T2 - T1:
+            # 超时
+            print("p{} ai overtime".format(player))
+            self.state = 'p{} overtime'.format(player)
+            self.winner = 2 if self.isFirst else 1
+            self.tag.append(["p{} 超时".format(player), "grey"])
+            self.reviewData.gameData["reason"] = "对方超时"
+            return None
+        else:
+            timeLeft -= T2 - T1
+        if self.isFirst: self.time1 = timeLeft
+        else: self.time2 = timeLeft
+
+        # 合法性判定
+        if action in validAction:
+            self.board.writein(action[0], action[1], action[2], self.block)
+            self.visualBoard.visualWriteIn(action, self.block, self.isFirst)
+        else:
+            # 非法落块
+            print("p{} ai illegal".format(player))
+            self.state = "judge to end"
+            self.winner = 2 if self.isFirst else 1
+            self.tag.append(["p{} 非法落块".format(player), "grey"])
+            self.reviewData.gameData["reason"] = "对方非法落块"
+            return None
+        return action
+
+    # 保存消行前帧
+    def saveFrameBeforeErase(self, action):
+        player = 1 if self.isFirst else 2
+        self.reviewData.chessboardData['isFirst'] = self.isFirst
+        self.reviewData.chessboardData['middleboard'] = True
+        self.reviewData.chessboardData['action'] = action
+        self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action, self.isFirst)
+        stolenLines = self.visualBoard.checkStolenLines(self.isFirst)
+        self.stolenNum += len(stolenLines)
+        self.reviewData.chessboardData['stolenLines'] = stolenLines
+        if len(stolenLines):
+            self.roundtag.append('p{} 偷消'.format(player))
+        if self.hold:
+            self.roundtag.append('僵持')
+        self.reviewData.chessboardData['tag'] = self.roundtag
+        self.saveToReviewData()
+
+    # 计算分数
+    def calcPoints(self):
+        player = 1 if self.isFirst else 2
+        peaceline, battleline = self.board.erase() # 更新棋盘
+        self.visualBoard.eraseVisual()
+        if peaceline + battleline >= 3: # 添加回合标签(多消,偷消)
+            self.roundtag.append('p{} {}消'.format(player, peaceline + battleline))
+        additionalPoint = 0
+        if battleline:
+            self.removeline = True
+            additionalPoint = battlepoint[battleline] + peacepoint[peaceline] + self.combo
+        if self.isFirst:
+            self.point1 += additionalPoint
+        else:
+            self.point2 += additionalPoint
+            if self.removeline: self.combo += 1
+            else: self.combo = 0
+            self.removeline = False
+        if self.combo > self.maxCombo: self.maxCombo = self.combo
+
+    # 保存消行后帧
+    def saveFrameAfterErase(self):
+        player = 1 if self.isFirst else 2
+        self.hold = False
+        if self.point1 == self.point2:
+            if self.holdStartTime:
+                if self.time >= self.holdStartTime + 3:
+                    self.hold = True
+            else:
+                self.holdStartTime = self.time
+            if self.previousLeader:
+                self.roundtag.append('p{} 追平'.format(player))
+        else:
+            self.holdStartTime = 0
+            if self.point1 > self.point2: leader = 1
+            else: leader = 2
+            if self.previousLeader:
+                if self.previousLeader != leader:
+                    self.roundtag.append('p{} 反超'.format(player))
+                    self.previousLeader = leader
+                    self.overtakeNum += 1
+            else: self.previousLeader = leader
+        if self.combo > 3:
+            self.roundtag.append('本回合已经{}连消！'.format(self.combo))
+        self.reviewData.chessboardData['middleboard'] = False
+        self.reviewData.chessboardData['action'] = None
+        self.reviewData.chessboardData['newblock'] = None
+        self.reviewData.chessboardData['stolenLines'] = []
+        self.reviewData.chessboardData['tag'] = self.roundtag
+        self.saveToReviewData()
+        self.roundtag = []
+
+    # 每个回合都要进行的游戏
     def turn(self):
         self.time += 1
-
         if self.time == 560:
-            self.state = "round limit"    #达到回合数上限
-
-        self.block = self.pack.get(self.time)    #取出下一块
-
-        #调用output方法返回一个列表
-        #监督对于时间的使用和是否返回报错
-        if self.time%2 == 1:    #先手玩家操作
-
-            self.isFirst == True
+            self.state = "round limit" # 达到回合数上限
+            self.reviewData.gameData["reason"] = "得分统计"
+        self.block = self.pack.get(self.time) # 取出下一块
+        
+        if self.time % 2 == 1: # 先手玩家操作
             self.round += 1
-            #p1 有效落块位置
-            validpos = self.matchdata.getAllValidAction(self.block, self.board.list)
-            if len(validpos)==0:    #p1 无路可走,溢出
-                self.state = 'p1 overflow'
-                self.winner = 2
-                self.tag = 'p1 被塞爆了'
-                return None
-
-            #更新资料包,准备发送给p1
-            self.matchdata.isFirst = True
-            self.updateData()
-
-
-            T1 = time.time()
-            try:
-                action = self.player[0].output(self.matchdata)
-            except Exception:    #p1 程序出错
-                print("p1 ai error!")
-                self.state = 'p1 error'
-                self.winner = 2
-                self.tag = 'p1 程序出错'
-                return None
-            T2 = time.time()
-
-            #时间判定
-            if self.time1 < T2-T1:    #p1 超时
-                print("p1 ai overtime")
-                self.state = 'p1 overtime'
-                self.winner = 2
-                self.tag = 'p1 超时'
-            else:
-                self.time1 -= T2-T1
-
-            #合法性判定
-            if action in validpos:
-                self.board.writein(action[0],action[1],action[2],self.block)
-                self.visualBoard.visualWriteIn(action,self.block,True)
-            else:    #p1 非法落块
-                print("p1 ai illegal")
-                self.state = "judge to end"
-                self.winner = 2
-                self.tag = 'p1 非法落块'
-                return None
-
-            #清理满行
-            if self.board.checkFull(): # 消行帧
-                self.reviewData.chessboardData['middleboard'] = True
-                self.reviewData.chessboardData['action'] = action
-                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action)
-                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
-                self.saveToReviewData()
-            peaceline, battleline, empty = self.board.erase()
-            self.visualBoard.erase()
-            self.pcleartimes[peaceline]+=1
-            self.bcleartimes[battleline]+=1
-
-            #计算分数
-            if battleline:
-                self.removeline = True
-                self.point1 += battlepoint[battleline] + peacepoint[peaceline] +  self.combo
-            else:
-                self.point1 += peacepoint[peaceline]
-            
-            # 添加回合标签
-            if peaceline + battleline >= 3:
-                self.roundtag.append('p1 {}消'.format(peaceline + battleline))
-
-        else:    #后手玩家操作
-
-            #后手玩家需要翻转棋盘
-            self.board.reverse()    
+            self.isFirst = True
+            validAction = self.checkValidAction()
+            if len(validAction) == 0: return None
+            action = self.runPlayerFunc(validAction)
+            if action == None: return None
+            self.matchdata.action = action # 将action存入matchdata, 以便后手玩家直接调用
+            self.saveFrameBeforeErase(action) # 保存消行前帧
+            self.calcPoints()
+            self.saveFrameAfterErase()
+        else: # 后手玩家操作
+            self.board.reverse() # 后手玩家需要翻转棋盘
             self.visualBoard.reverse()
-            self.isFirst == False
-            #p2 有效落块位置
-            validpos = self.matchdata.getAllValidAction(self.block, self.board.list)
-            if len(validpos)==0:    #p2 无路可走,溢出
-                self.state = 'p2 overflow'
-                self.winner = 1
-                self.tag = 'p2 被塞爆了'
-                return None
+            self.isFirst = False
+            validAction = self.checkValidAction()
+            if len(validAction) == 0: return None
+            action = self.runPlayerFunc(validAction)
+            if action == None: return None
+            self.matchdata.action = action # 将action存入matchdata,以便先手玩家直接调用
 
-            #更新资料包,准备发送给p2
-            self.matchdata.isFirst = False
-            self.updateData()
-
-
-            T1 = time.time()
-            try:
-                action = self.player[1].output(self.matchdata)
-            
-            except Exception:    #p2 程序出错
-                print("p2 ai error!")
-                self.state = 'p2 error'
-                self.winner = 1
-                self.tag = 'p2 程序出错'
-                return None
-            
-            T2 = time.time()
-            
-
-            #时间判定
-            if self.time2 < T2-T1:    #p2 超时
-                print("p2 ai overtime")
-                self.state = 'p2 overtime'
-                self.winner = 1
-                self.tag = 'p2 超时'
-            else:
-                self.time2 -= T2-T1
-
-            #合法性判定
-            if action in validpos:
-                self.board.writein(action[0],action[1],action[2],self.block)
-                self.visualBoard.visualWriteIn(action,self.block,False)
-            else:    #p2 非法落块
-                print("p2 ai illegal")
-                self.state = "judge to end"
-                self.winner = 1
-                self.tag = 'p2 非法落块'
-                return None
-
-            #清理满行
-            full = False
-            if self.board.checkFull(): # 消行帧
-                full = True
-            peaceline, battleline, empty = self.board.erase()
-            self.visualBoard.erase()
-            self.pcleartimes[peaceline]+=1
-            self.bcleartimes[battleline]+=1
-
-            #计算分数
-            if battleline:
-                self.removeline = True
-                self.point2 += battlepoint[battleline] + peacepoint[peaceline] +  self.combo
-            else:
-                self.point2 += peacepoint[peaceline]
-
-            #把棋盘翻转回去
-            self.board.reverse()
+            self.visualBoard.reverse()
+            self.saveFrameBeforeErase(action) # 保存消行前帧
             self.visualBoard.reverse()
 
-            # 技术组心态炸了(2022/5/9)
-            if full:
-                self.reviewData.chessboardData['middleboard'] = True
-                self.reviewData.chessboardData['action'] = action
-                self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,False)
-                self.reviewData.chessboardData['tag'] = [] # 消行前帧无标签
-                self.saveToReviewData()
+            self.calcPoints()
+            self.board.reverse() # 把棋盘翻转回去
+            self.visualBoard.reverse()
+            self.saveFrameAfterErase()
 
-            #连击结算
-            if self.removeline:
-                self.combo += 1
-            else:
-                self.combo = 0
-            self.removeline = False
-
-            # 添加回合标签
-            higherscorer = self.higherscorer
-            if self.point1 > self.point2:
-                self.higherscorer = 1
-            elif self.point1 < self.point2:
-                self.higherscorer = 2
-            else:
-                self.higherscorer = -1 # 追平
-            
-            if higherscorer == None:
-                pass # 第一回合
-            else:
-                if self.higherscorer == -1:
-                    if higherscorer == -1:
-                        pass # 持续追平
-                    else:
-                        self.roundtag.append('p{} 追平'.format(1 if higherscorer == 2 else 2))
-                else:
-                    if higherscorer != self.higherscorer:
-                        self.roundtag.append('p{} 反超'.format(self.higherscorer))
-
-            if peaceline + battleline >= 3:
-                if self.roundtag:
-                    self.roundtag.append('p2 {}消'.format(peaceline + battleline))
-                else:
-                    self.roundtag.append('p2 {}消'.format(peaceline + battleline))
-
-        # 保存复盘数据
-        self.reviewData.chessboardData['middleboard'] = False
-        self.reviewData.chessboardData['tag'] = self.roundtag
-        if not (peaceline or battleline): # 非消行后帧
-            self.reviewData.chessboardData['action'] = action
-            self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,self.time%2)
-        self.saveToReviewData()
-        self.reviewData.chessboardData['middleboard'] = False
-        self.reviewData.chessboardData['tag'] = self.roundtag
-        if not (peaceline or battleline): # 非消行后帧
-            self.reviewData.chessboardData['action'] = action
-            self.reviewData.chessboardData['newblock'] = Block.Block(self.block,0).showBlockVisual(action,self.time%2)
-        self.roundtag = [] # 清空roundtag
-
-
-    #游戏结束的广播
+    # 游戏结束的广播
     def end(self):
         print("本局游戏结束")
         if self.state == 'round limit':
-            if self.point1 > self.point2:
-                self.winner = 1
-            elif self.point1 < self.point2:
-                self.winner = 2
-            else:
-                self.winner = "平局"
+            if self.point1 > self.point2: self.winner = 1
+            elif self.point1 < self.point2: self.winner = 2
+            else: self.winner = "平局"
         print("胜者是",self.winner)
         print("分数",self.point1, self.point2)
-        print("游戏结束原因是",self.state)
+        print("游戏结束原因是", self.state)
         print(self.time)
+        diff = abs(self.point1 - self.point2)
+        if diff >= 100: self.tag.append(["完胜", "green"])
+        elif diff >= 50: self.tag.append(["大胜", "green"])
+        # elif diff >= 5: self.tag.append(["小胜", "green"])
+        elif 0 < diff < 5: self.tag.append(["险胜", "green"])
+        if self.stolenNum >= 6:
+            self.tag.append(["偷鸡摸狗!", "red"])
+        if self.overtakeNum >= 3:
+            self.tag.append(["十分胶着!", "orange"])
+        if self.maxCombo >= 6:
+            self.tag.append(["{}连消!".format(self.maxCombo), "blue"])
+        self.tag.append(["{}回合".format(self.round)])
 
         # 保存复盘数据
         self.reviewData.gameData['winner'] = self.winner
         self.reviewData.gameData['tag'] = self.tag
-        self.reason = self.state
         self.reviewData.save()
 
 

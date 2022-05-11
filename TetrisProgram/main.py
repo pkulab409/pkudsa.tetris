@@ -54,7 +54,7 @@ class Game:
         self.time = 0 # 游戏进行轮次(并非回合数!!!)
         self.isFirst = 0
         self.round = 0
-        self.tag = None # 单局标签
+        self.tag = [] # 单局标签
         self.roundtag = [] # 回合标签
         self.higherscorer = None # 分数领先者 用于判断反超 便于添加tag
         self.high = None
@@ -70,20 +70,19 @@ class Game:
             self.winner = 2
             print("p1 ai missing")
             self.state = "judge to end"
-            self.tag = "p1 ai 丢失"
+            self.tag.append("p1 ai 丢失")
         try:
             self.player.append(import_by_name(teamlast, False))
         except:
             if self.state == "judge to end":
                 print("p2 ai missing")
                 self.winner = -1
-                self.tag = "both ai 丢失"
+                self.tag.append("both ai 丢失")
             else:
                 self.winner = 1
                 self.state = "judge to end"
                 print("p2 ai missing")
-                self.tag = "p2 ai 丢失"
-    
+                self.tag.append("p2 ai 丢失")    
 
     # 同步用户可调用数据
     def updateData(self):
@@ -127,7 +126,7 @@ class Game:
             if len(validpos) == 0: # p1 无路可走,溢出
                 self.state = 'p1 overflow'
                 self.winner = 2
-                self.tag = 'p1 被塞爆了'
+                self.tag.append('p1 被塞爆了')
                 return None
 
             # 更新matchdata,准备发送给p1
@@ -142,7 +141,7 @@ class Game:
                 print("p1 ai error!")
                 self.state = 'p1 error'
                 self.winner = 2
-                self.tag = 'p1 程序出错'
+                self.tag.append('p1 程序出错')
                 return None
             T2 = time.time() # p1 决策结束,计时结束
 
@@ -151,7 +150,7 @@ class Game:
                 print("p1 ai overtime")
                 self.state = 'p1 overtime'
                 self.winner = 2
-                self.tag = 'p1 超时'
+                self.tag.append('p1 超时')
             else:
                 self.time1 -= T2-T1
 
@@ -163,7 +162,7 @@ class Game:
                 print("p1 ai illegal")
                 self.state = "judge to end"
                 self.winner = 2
-                self.tag = 'p1 非法落块'
+                self.tag.append('p1 非法落块')
                 return None
             
             # 将action存入matchdata,以便后手玩家直接调用
@@ -178,8 +177,8 @@ class Game:
             
             if self.reviewData.chessboardData['stolenLines']:
                 self.roundtag.append('p1 偷消')
-            if self.hold = True
-            self.roundtag.append("僵持")
+            if self.hold == True:
+                self.roundtag.append("僵持")
                 
             self.reviewData.chessboardData['tag'] = self.roundtag
             self.saveToReviewData()
@@ -221,7 +220,7 @@ class Game:
             if len(validpos)==0: # p2 无路可走,溢出
                 self.state = 'p2 overflow'
                 self.winner = 1
-                self.tag = 'p2 被塞爆了'
+                self.tag.append('p2 被塞爆了')
                 return None
 
             # 更新matchdata,准备发送给p2
@@ -236,7 +235,7 @@ class Game:
                 print("p2 ai error!")
                 self.state = 'p2 error'
                 self.winner = 1
-                self.tag = 'p2 程序出错'
+                self.tag.append('p2 程序出错')
                 return None
             T2 = time.time() # p2 决策结束,计时结束
             
@@ -245,7 +244,7 @@ class Game:
                 print("p2 ai overtime")
                 self.state = 'p2 overtime'
                 self.winner = 1
-                self.tag = 'p2 超时'
+                self.tag.append('p2 超时')
             else:
                 self.time2 -= T2-T1
 
@@ -257,7 +256,7 @@ class Game:
                 print("p2 ai illegal")
                 self.state = "judge to end"
                 self.winner = 1
-                self.tag = 'p2 非法落块'
+                self.tag.append('p2 非法落块')
                 return None
             
             # 将action存入matchdata,以便先手玩家直接调用
@@ -349,9 +348,9 @@ class Game:
         print("本局游戏结束")
         if self.state == 'round limit':
             if self.point1 > self.point2:
-                self.winner = 1
+                self.winner = "p1"
             elif self.point1 < self.point2:
-                self.winner = 2
+                self.winner = "p2"
             else:
                 self.winner = "平局"
         print("胜者是",self.winner)
@@ -359,7 +358,7 @@ class Game:
         print("游戏结束原因是",self.state)
         print(self.time)
         self.tag.append(self.winner)
-        self.tag.append(self.time)
+        self.tag.append('共计{}步！'.format(self.time))
         diff = abs(self.point1-self.point2)
         if diff>150:
             self.tag.append("完胜")

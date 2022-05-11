@@ -79,7 +79,7 @@ class Board:
         self.list = part1 + part2
 
 
-    def checkStolenLines(self,isFirst = True):
+    def checkStolenLines(self, isFirst):
         stolenLines = []
         for i in range(self.PeaceAreaWidth, self.PeaceAreaWidth + self.BattleAreaWidth):
             k = 0 # 先手方块数
@@ -89,9 +89,7 @@ class Board:
                 elif t > 0:
                     k += 1
             else:
-                if isFirst and k <= 3:
+                if (isFirst and k <= 3) or (not isFirst and k >= 7):
                     stolenLines.append(i)
-                elif not isFirst and k >= 7:
-                    stolenLines.append(24 - i)
 
         return stolenLines

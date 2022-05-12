@@ -14,6 +14,7 @@ class Board:
         part1 = self.list[0 : self.PeaceAreaWidth + self.BattleAreaWidth]
         part2 = self.list[self.PeaceAreaWidth + self.BattleAreaWidth : self.PeaceAreaWidth*2 + self.BattleAreaWidth]
         dellist = []
+        emptylist = []
         for i in range(self.PeaceAreaWidth):
             if 0 not in part1[i]:
                 dellist.append(i)
@@ -22,8 +23,17 @@ class Board:
             if 0 not in part1[i]:
                 dellist.append(i)
                 line2 += 1
+            else:
+                for v in part1[i]:
+                    if v != 0:
+                        break
+                else:
+                    emptylist.append(i) # 记录空行
         while dellist:
             part1.pop(dellist.pop())
+        if line2:
+            while emptylist:
+                part1.pop(emptylist.pop()) # 删除空行
 
         part1 = [[0 for i in range(10)] for j in range(line1 + line2)] + part1
         self.list = part1 + part2
@@ -87,3 +97,35 @@ class Board:
                     stolenLines.append(i)
 
         return stolenLines
+
+if __name__ == '__main__':
+    b = Board()
+    b.list = [
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+    ]

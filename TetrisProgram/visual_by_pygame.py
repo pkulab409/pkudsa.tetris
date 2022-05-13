@@ -43,9 +43,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, HEIGHT))
 pygame.display.set_caption("方块大战————pygame可视化调试界面")
 
 
-#设置速度
 clock = pygame.time.Clock()
-FPS = 200   #FPS越大速度越快！
 
 running = True
 gameover = False
@@ -162,11 +160,14 @@ class Brick():
             pygame.draw.rect(screen, self.color, (cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH))
             pygame.draw.rect(screen, WHITE, (cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH), 2)
 
+# 输入先后手玩家名称
+team1 = input()
+team2 = input()
 
-
-#绘制场地并开始比赛
-agame = main.Game("stupidAI1","stupidAI2",100)
+# 绘制场地并开始比赛
+agame = main.Game(team1, team2, 10)
 w =  Wall()
+FPS = 20 # FPS越大速度越快！
 while agame.state == 'gaming':
 
     pygame.display.update()

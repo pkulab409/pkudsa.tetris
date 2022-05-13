@@ -164,9 +164,9 @@ class Brick():
 # team1 = input()
 # team2 = input()
 # team1, team2 = "stupidAI1", "person"
-team1, team2 = "person", "stupidAI1"
+# team1, team2 = "person", "stupidAI1"
 # team1, team2 = "stupidAI1", "stupidAI2"
-# team1, team2 = "person", "person"
+team1, team2 = "person", "person"
 # 绘制场地并开始比赛
 agame = main.Game(team1, team2, 9999999)
 w =  Wall()

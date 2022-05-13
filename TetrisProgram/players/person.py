@@ -48,15 +48,23 @@ class Player:
         # 如果是后手玩家，将这里的列表反向，使键盘上下操作和方块的移动方向一致
         if not self.isFirst:
             originValidPos = originValidPos[::-1]
+        validPos = [[x for x in originValidPos if x[2] == i] for i in range(4)]
+        centerPos = []
         for i in range(4):
-            validPos.append([x for x in originValidPos if x[2] == i])
+            t = []
+            for p in validPos[i]:
+                if self.isFirst:
+                    t.append((p[0] * GRID_WIDTH + GRID_WIDTH / 2, (9 - p[1]) * GRID_WIDTH + GRID_WIDTH / 2))
+                else:
+                    t.append(((24 - p[0]) * GRID_WIDTH + GRID_WIDTH / 2, p[1] * GRID_WIDTH + GRID_WIDTH / 2))
+            centerPos.append(t)
         print(validPos)
+        print(centerPos)
 
         # 如果是后手玩家，绘制前翻转一次
         if not self.isFirst:
             self.game.visualBoard.reverse()
-            self.wall.screen_color_matrix = [x[:]
-                                             for x in self.game.visualBoard.list]
+            self.wall.screen_color_matrix = [x[:] for x in self.game.visualBoard.list]
             self.game.visualBoard.reverse()
 
         DONE = False
@@ -94,5 +102,25 @@ class Player:
                         current_act_id = 0
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                         DONE = True
+                elif event.type == pygame.MOUSEMOTION:
+                    # 找一个距离鼠标最小的中心
+                    dis_list = [
+                        (act_id, (event.pos[0] - center[0]) ** 2 + (event.pos[1] - center[1]) ** 2) 
+                            for act_id, center in enumerate(centerPos[current_direction])
+                    ]
+                    current_act_id = min(dis_list, key=lambda x:x[1])[0]
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        DONE = True
+                        break
+                    elif event.button == 3:
+                        while len(validPos[(current_direction + 1) % 4]) == 0:
+                            current_direction = (current_direction + 1) % 4
+                        current_direction = (current_direction + 1) % 4
+                        dis_list = [
+                            (act_id, (event.pos[0] - center[0]) ** 2 + (event.pos[1] - center[1]) ** 2) 
+                                for act_id, center in enumerate(centerPos[current_direction])
+                        ]
+                        current_act_id = min(dis_list, key=lambda x:x[1])[0]
 
         return validPos[current_direction][current_act_id]

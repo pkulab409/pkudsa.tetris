@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -DNDEBUG  -shared  -o CppAcceleration38.cpython-38-x86_64-linux-gnu.so CMakeFiles/CppAcceleration38.dir/GetAllValidPositions.cpp.o  -L/usr/local/lib -Wl,-rpath,/usr/local/lib -flto 

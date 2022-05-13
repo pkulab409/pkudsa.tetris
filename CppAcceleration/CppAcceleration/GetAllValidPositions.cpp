@@ -258,7 +258,7 @@ pybind11::list GetAllValidAction(unsigned int type_, pybind11::list field_)
 	return result;
 }
 
-PYBIND11_MODULE(CppAcceleration310, m)
+PYBIND11_MODULE(CppAcceleration38, m)
 {
 	m.doc() = "Get all valid block positions"; // optional module docstring
 	m.def("GetAllValidActionRepeating", &GetAllValidActionRepeating, "Returns all valid actions in a tuple list");

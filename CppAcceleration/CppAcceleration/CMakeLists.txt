@@ -10,8 +10,6 @@ set(PYTHON_LIBRARIES "/usr/lib/x86_64-linux-gnu/libpython3.8m.so")
 link_directories(
     /usr/local/lib
 )
-find_package(OpenCV REQUIRED)
-find_package(ncnn REQUIRED)
 find_package(PythonLibs REQUIRED)
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}

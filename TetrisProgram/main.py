@@ -240,7 +240,7 @@ class Game:
         self.time += 1
         if self.time == 560:
             self.state = "round limit" # 达到回合数上限
-            self.reviewData.gameData["reason"] = "得分统计"
+            self.reviewData.gameData["reason"] = "{}:{}".format(self.point1, self.point2)
         self.block = self.pack.get(self.time) # 取出下一块
         
         if self.time % 2 == 1: # 先手玩家操作
@@ -289,7 +289,7 @@ class Game:
         elif diff >= 50: self.tag.append(["大胜", "green"])
         # elif diff >= 5: self.tag.append(["小胜", "green"])
         elif 0 < diff < 5: self.tag.append(["险胜", "green"])
-        if self.stolenNum >= 6:
+        if self.stolenNum >= 10:
             self.tag.append(["偷鸡摸狗!", "red"])
         if self.overtakeNum >= 3:
             self.tag.append(["十分胶着!", "orange"])

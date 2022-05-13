@@ -8,20 +8,27 @@ import platform
 try:
     if sys.version_info[0] != 3:
         raise Exception("Must use Python 3")
-    elif sys.version_info[1] < 7:
-        raise Exception("Must use Python 3.7 or higher version")
-    if platform.system() != "Windows":
-        raise Exception("CppAcceleration only support Windows!")
+    if platform.system() == "Windows":
+        if sys.version_info[1] < 7:
+            raise Exception("Must use Python 3.7 or higher version on Windows!")
+        elif sys.version_info[1] == 7:
+            import CppAcceleration37 as CppAcceleration
+        elif sys.version_info[1] == 8:
+            import CppAcceleration38 as CppAcceleration
+        elif sys.version_info[1] == 9:
+            import CppAcceleration39 as CppAcceleration
+        elif sys.version_info[1] == 10:
+            import CppAcceleration310 as CppAcceleration
+        print("Support win CppAcceleration3" + str(sys.version_info[1]))
+    elif platform.system() == "Linux":
+        if sys.version_info[1] != 8:
+            raise Exception("Must use Python 3.8 on Linux!")
+        if sys.version_info[1] == 8:
+            import CppAcceleration38 as CppAcceleration
+        print("Support linux CppAcceleration3" + str(sys.version_info[1]))
+    else:
+        raise Exception("CppAcceleration only support Windows and Linux!")
 
-    if sys.version_info[1] == 7:
-        import CppAcceleration37 as CppAcceleration
-    elif sys.version_info[1] == 8:
-        import CppAcceleration38 as CppAcceleration
-    elif sys.version_info[1] == 9:
-        import CppAcceleration39 as CppAcceleration
-    elif sys.version_info[1] == 10:
-        import CppAcceleration310 as CppAcceleration
-    print("Support CppAcceleration3" + str(sys.version_info[1]))
 except:
     import traceback
     traceback.print_exc()

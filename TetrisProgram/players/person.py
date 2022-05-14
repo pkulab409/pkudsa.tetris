@@ -36,7 +36,7 @@ class Player:
         nowboard = matchdata.getBoard()
         nowblock = matchdata.getCurrentBlock()
         originValidPos = matchdata.getAllValidActionSlow(nowblock, nowboard)
-        print(len(originValidPos))  # 游戏保证了这里数量不为0
+        # print(len(originValidPos))  # 游戏保证了这里数量不为0
         # 直接清空之前没处理的事件
         for event in pygame.event.get():
             pass
@@ -58,8 +58,8 @@ class Player:
                 else:
                     t.append(((24 - p[0]) * GRID_WIDTH + GRID_WIDTH / 2, p[1] * GRID_WIDTH + GRID_WIDTH / 2))
             centerPos.append(t)
-        print(validPos)
-        print(centerPos)
+        # print(validPos)
+        # print(centerPos)
 
         # 如果是后手玩家，绘制前翻转一次
         if not self.isFirst:

@@ -16,16 +16,21 @@ class Board:
         dellist = []
         for i in range(self.PeaceAreaWidth):
             if 0 not in part1[i]:
-                dellist.append(i)
                 line1 += 1
         for i in range(self.PeaceAreaWidth, self.PeaceAreaWidth + self.BattleAreaWidth):
             if 0 not in part1[i]:
-                dellist.append(i)
                 line2 += 1
-        while dellist:
-            part1.pop(dellist.pop())
+        n=0
+        while n<len(part1):
+            if 0 not in part1[n]:
+                del part1[n]
+                n-=1
+            elif part1[n]==[0 for i in range(10)] and line2:
+                del part1[n]
+                n-=1
+            n+=1
 
-        part1 = [[0 for i in range(10)] for j in range(line1 + line2)] + part1
+        part1 = [[0 for i in range(10)] for j in range(15-len(part1))] + part1
         self.list = part1 + part2
 
         return (line1, line2)
@@ -58,18 +63,29 @@ class Board:
         return False
 
     def eraseVisual(self): # 更新前端棋盘
+        line1 = 0    #用于返回和平区消行数量
+        line2 = 0    #用于返回战争区消行数量
 
         part1 = self.list[0 : self.PeaceAreaWidth + self.BattleAreaWidth]
         part2 = self.list[self.PeaceAreaWidth + self.BattleAreaWidth : self.PeaceAreaWidth*2 + self.BattleAreaWidth]
         dellist = []
-        for i in range(self.PeaceAreaWidth + self.BattleAreaWidth):
+        for i in range(self.PeaceAreaWidth):
             if 0 not in part1[i]:
-                dellist.append(i)
-        n = len(dellist)
-        while dellist:
-            part1.pop(dellist.pop())
+                line1 += 1
+        for i in range(self.PeaceAreaWidth, self.PeaceAreaWidth + self.BattleAreaWidth):
+            if 0 not in part1[i]:
+                line2 += 1
+        n=0
+        while n<len(part1):
+            if 0 not in part1[n]:
+                del part1[n]
+                n-=1
+            elif part1[n]==[0 for i in range(10)] and line2:
+                del part1[n]
+                n-=1
+            n+=1
 
-        part1 = [[0 for i in range(10)] for j in range(n)] + part1
+        part1 = [[0 for i in range(10)] for j in range(15-len(part1))] + part1
         self.list = part1 + part2
 
 
@@ -87,3 +103,35 @@ class Board:
                     stolenLines.append(i)
 
         return stolenLines
+
+if __name__ == '__main__':
+    b = Board()
+    b.list = [
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0],
+    ]

@@ -7,5 +7,5 @@ class Player:
     def output(self, matchdata):
         nowboard = matchdata.getBoard()
         nowblock = matchdata.getCurrentBlock()
-        vaildpos = matchdata.getAllValidAction(nowblock, nowboard)
-        return random.choice(vaildpos)
+        validpos = matchdata.getAllValidAction(nowblock, nowboard)
+        return random.choice(validpos)

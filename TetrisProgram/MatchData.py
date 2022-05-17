@@ -172,7 +172,7 @@ class MatchData:
         block = Block.Block(type,action[2])
         block.y = action[0]
         block.x = action[1]
-        return block.showblock()
+        return [(y ,x) for x, y in block.showblock()]
     
     def removeLines(self,board):
         line1 = 0    # 用于返回和平区消行数量
@@ -199,7 +199,7 @@ class MatchData:
     
     def getReverseBoard(self,board):
         for i in range(board):
-            i.revserse()
+            i.reverse()
         board.reverse()
         return board
     

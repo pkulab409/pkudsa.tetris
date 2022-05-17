@@ -194,6 +194,8 @@ class Game:
         if battleline:
             self.removeline = True
             additionalPoint = battlepoint[battleline] + peacepoint[peaceline] + self.combo
+        else:
+            additionalPoint = battlepoint[battleline] + peacepoint[peaceline]
         if self.isFirst:
             self.point1 += additionalPoint
         else:

@@ -199,7 +199,7 @@ class MatchData:
     
     def getReverseBoard(self,board):
         for i in range(board):
-            i.revserse()
+            i.reverse()
         board.reverse()
         return board
     

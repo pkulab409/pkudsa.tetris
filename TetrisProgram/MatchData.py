@@ -198,7 +198,7 @@ class MatchData:
         return (boardreturn,line1,line2)
     
     def getReverseBoard(self,board):
-        for i in range(board):
+        for i in board:
             i.reverse()
         board.reverse()
         return board

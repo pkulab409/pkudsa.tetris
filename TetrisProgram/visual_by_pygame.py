@@ -3,7 +3,7 @@ import sys
 import os
 import main
 
-os.chdir(sys.path[0])
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 pygame.init()
 

@@ -6,6 +6,10 @@ import copy
 import ReviewData
 import Block
 
+# 调试窗口
+team1="stupidAI1"
+team2="stupidAI2"
+
 #奖励字典
 peacepoint = {0:0, 1:0, 2:1, 3:2, 4:4}
 battlepoint = {0:0, 1:1, 2:2, 3:4, 4:8}
@@ -309,7 +313,7 @@ if __name__ == "__main__":
     import os
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    play = Game("stupidAI1","stupidAI2",10)
+    play = Game(team1,team2,10)
     while play.state == "gaming":
         play.turn()
     play.end()

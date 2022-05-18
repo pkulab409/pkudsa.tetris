@@ -98,7 +98,7 @@ class Game:
         self.matchdata.time1 = self.time1
         self.matchdata.time2 = self.time2
         self.matchdata.board = copy.deepcopy(self.board.list)
-        self.matchdata.pack = self.pack
+        self.matchdata.pack = copy.deepcopy(self.pack)
         self.matchdata.point1 = self.point1
         self.matchdata.point2 = self.point2
         self.matchdata.time = self.time

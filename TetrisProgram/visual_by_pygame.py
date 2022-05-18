@@ -9,9 +9,10 @@ pygame.init()
 
 # 调试窗口
 team1="stupidAI1"
-team2="stupidAI2"
+team2="stupidAI1"
 FPS = 20  #刷新速度
 GRID_WIDTH = 20  #格宽度
+STATIS = True  #返回战术统计
 
 #高级调试窗口
 PeaceAreaWidth = 10   #和平区行数
@@ -200,3 +201,5 @@ while agame.state == 'gaming':
 
 #游戏结束广播
 agame.end()
+if STATIS:
+    agame.sta()

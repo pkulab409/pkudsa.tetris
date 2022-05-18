@@ -103,7 +103,7 @@ class Wall():
 
 
     def show_text(self, text, size, x, y, color=(0xff, 0xff, 0xff),bgColor = None):
-        fontObj = pygame.font.Font('font/font.ttc', size)
+        fontObj = pygame.font.Font('font/lxgw.ttf', size)
         textSurfaceObj = fontObj.render(text, True, color,bgColor)
         textRectObj = textSurfaceObj.get_rect()
         textRectObj.center = (x, y)
@@ -203,3 +203,5 @@ while agame.state == 'gaming':
 agame.end()
 if STATIS:
     agame.sta()
+pygame.quit()
+sys.exit()

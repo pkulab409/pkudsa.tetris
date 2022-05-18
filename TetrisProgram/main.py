@@ -307,9 +307,9 @@ class Game:
 
 if __name__ == "__main__":
     import os
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    play = Game("stupidAI1","stupidAI2",100)
+    play = Game("stupidAI1","stupidAI2",10)
     while play.state == "gaming":
         play.turn()
     play.end()

@@ -11,7 +11,7 @@ pygame.init()
 team1="stupidAI1"
 team2="stupidAI1"
 FPS = 20  #刷新速度
-GRID_WIDTH = 20  #格宽度
+GRID_WIDTH = 30  #格宽度
 STATIS = True  #返回战术统计
 
 #高级调试窗口

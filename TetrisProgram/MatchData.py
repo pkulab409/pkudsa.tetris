@@ -4,6 +4,7 @@ import Block
 import copy
 import sys
 import platform
+from functools import partialmethod
 
 try:
     if sys.version_info[0] != 3:
@@ -160,13 +161,15 @@ class MatchData:
         else:
             return self.time2
 
-    def putBlock(self,type,action,board):
+    def modifyBlock(self,type,action,board,value):
         block = Block.Block(type,action[2])
         block.y = action[0]
         block.x = action[1]
         for x, y in block.showblock():
-            board[y][x] = 1
+            board[y][x] = value
         return board
+    putBlock = partialmethod(modifyBlock, value=1)
+    delBlock = partialmethod(modifyBlock, value=0)
         
     def getCells(self,type,action):
         block = Block.Block(type,action[2])

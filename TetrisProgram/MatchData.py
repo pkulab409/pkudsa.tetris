@@ -127,7 +127,7 @@ class MatchData:
         return (self.time + 1)//2
 
     def getBoard(self):    # 返回当前棋盘,后手玩家会获得翻转棋盘
-        return self.board
+        return copy.deepcopy(self.board)
 
     def getCurrentBlock(self):    # 返回当前需要操作的下落块
         timenow = self.time

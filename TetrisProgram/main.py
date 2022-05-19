@@ -35,6 +35,40 @@ def import_by_name(player_name, is_first):
     exec(f'''from players.{player_name} import Player;pool.append(Player({is_first}))''')
     return pool.pop()
 
+def regular(block,action):
+    if block == 1:
+        if action[2] == 2:
+            return([action[0],action[1]-1,0])
+        elif action[2] == 3:
+            return([action[0]-1,action[1],1])
+        else:
+            return action
+    elif block == 4:
+        if action[2] == 1:
+            return([action[0]+1,action[1],0])
+        elif action[2] == 1:
+            return([action[0]+1,action[1]-1,0])
+        elif action[2] == 1:
+            return([action[0],action[1]-1,0])
+        else:
+            return action
+    elif block == 5:
+        if action[2] == 2:
+            return([action[0]+1,action[1],0])
+        elif action[2] == 3:
+            return([action[0],action[1]-1,1])
+        else:
+            return action
+    elif block == 7:
+        if action[2] == 2:
+            return([action[0]+1,action[1],0])
+        elif action[2] == 3:
+            return([action[0],action[1]-1,1])
+        else:
+            return action
+    else:
+        return action
+
 
 class Game:
     def __init__(self, teamfirst, teamlast, limit = 9999): # limit是每回合时间限制,team是玩家队伍和文件名
@@ -254,6 +288,7 @@ class Game:
         self.reviewData.chessboardData['tag'] = self.roundtag
         self.saveToReviewData()
         self.roundtag = []
+        
 
     # 每个回合都要进行的游戏
     def turn(self):
@@ -270,7 +305,7 @@ class Game:
             if len(validAction) == 0: return None
             action = self.runPlayerFunc(validAction)
             if action == None: return None
-            self.matchdata.action = action # 将action存入matchdata, 以便后手玩家直接调用
+            self.matchdata.action = regular(self.block,action) # 将action存入matchdata, 以便后手玩家直接调用
             self.saveFrameBeforeErase(action) # 保存消行前帧
             self.calcPoints()
             self.saveFrameAfterErase()
@@ -282,8 +317,7 @@ class Game:
             if len(validAction) == 0: return None
             action = self.runPlayerFunc(validAction)
             if action == None: return None
-            self.matchdata.action = action # 将action存入matchdata,以便先手玩家直接调用
-
+            self.matchdata.action = regular(self.block,action) # 将action存入matchdata, 以便后手玩家直接调用
             self.visualBoard.reverse()
             self.saveFrameBeforeErase(action) # 保存消行前帧
             self.visualBoard.reverse()

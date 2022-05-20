@@ -50,7 +50,7 @@ class MatchData:
         self.combo = None
         self.action = None
 
-    
+
     def getAllValidActionRepeating(self, type, board): # 返回值是允许的位置的三元组 (y, x, pos) 的列表
         if CppAcceleration:
             return CppAcceleration.GetAllValidActionRepeating(type, board)
@@ -97,7 +97,7 @@ class MatchData:
                             phaseboard[y][8-x][pos]=1
                 for x in range(0,9):#旋转继承
                     if 1 in phaseboard[y][x]:
-                        phaseboard[y][x]=copy.deepcopy(validboard[y][x])
+                        phaseboard[y][x]=list(validboard[y][x])
         
         for pos in range(4):#确认是否可以为最终位置
             for x in range(10):
@@ -128,15 +128,15 @@ class MatchData:
         return (self.time + 1)//2
 
     def getBoard(self):    # 返回当前棋盘,后手玩家会获得翻转棋盘
-        return copy.deepcopy(self.board)
+        return list(map(list, self.board))
 
     def getCurrentBlock(self):    # 返回当前需要操作的下落块
         timenow = self.time
         return self.pack.get(timenow)
-    
+
     def getBlockList(self):    # 返回本局的整个下落块列表
         return self.pack.list
-    
+
     def getBlock(self,round,isFirst):    # 返回任意回合和先后手的块
         return self.pack.get(2*round-isFirst)
 
@@ -145,7 +145,7 @@ class MatchData:
             return self.point1
         else:
             return self.point2
-    
+
     def getCombo(self):    # 返回连击数
         return self.combo
 
@@ -154,7 +154,7 @@ class MatchData:
             return self.point2
         else:
             return self.point1
-    
+
     def getTimeLeft(self):    # 查看自己的剩余时间
         if self.isFirst:
             return self.time1
@@ -170,13 +170,13 @@ class MatchData:
         return board
     putBlock = partialmethod(modifyBlock, value=1)
     delBlock = partialmethod(modifyBlock, value=0)
-        
+
     def getCells(self,type,action):
         block = Block.Block(type,action[2])
         block.y = action[0]
         block.x = action[1]
         return [(y ,x) for x, y in block.showblock()]
-    
+
     def removeLines(self,board):
         line1 = 0    # 用于返回和平区消行数量
         line2 = 0    # 用于返回战争区消行数量
@@ -199,12 +199,15 @@ class MatchData:
         boardreturn = part1 + part2
 
         return (boardreturn,line1,line2)
-    
+
     def getReverseBoard(self,board):
         for i in board:
             i.reverse()
         board.reverse()
         return board
-    
+
+    def copyReverseBoard(self,board):
+        return [l[::-1] for l in reversed(board)]
+
     def getLastAction(self):
         return self.action

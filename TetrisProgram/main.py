@@ -96,8 +96,8 @@ class Game:
         self.matchdata.block = self.block
         self.matchdata.time1 = self.time1
         self.matchdata.time2 = self.time2
-        self.matchdata.board = copy.deepcopy(self.board.list)
-        self.matchdata.pack = copy.deepcopy(self.pack)
+        self.matchdata.board = list(map(list, self.board.list))
+        self.matchdata.pack = Pack(self.pack)
         self.matchdata.point1 = self.point1
         self.matchdata.point2 = self.point2
         self.matchdata.time = self.time
@@ -106,7 +106,7 @@ class Game:
     # 记录复盘数据
     def saveToReviewData(self):
         self.reviewData.chessboardData['round'] = (self.time + 1)//2
-        self.reviewData.chessboardData['board'] = copy.deepcopy(self.visualBoard.list)
+        self.reviewData.chessboardData['board'] = list(map(list, self.visualBoard.list))
         self.reviewData.chessboardData['point1'] = self.point1
         self.reviewData.chessboardData['point2'] = self.point2
         self.reviewData.chessboardData['combo'] = self.combo
@@ -116,7 +116,7 @@ class Game:
     # 寻找有效落块位置
     def checkValidAction(self):
         player = 1 if self.isFirst else 2
-        validAction = self.matchdata.getAllValidActionRepeating(self.block, self.board.list)
+        validAction = self.matchdata.getAllValidAction(self.block, self.board.list)
         # 无路可走,溢出
         if len(validAction) == 0:
             self.state = 'p{} overflow'.format(player)

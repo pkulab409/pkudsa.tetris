@@ -3,19 +3,25 @@ import sys
 import os
 import main
 
-os.chdir(sys.path[0])
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 pygame.init()
 
-#创建一场比赛
+# 调试窗口
+team1="stupidAI1"
+team2="stupidAI1"
+FPS = 20  #刷新速度
+GRID_WIDTH = 30  #格宽度
+STATIS = True  #返回战术统计
 
+#高级调试窗口
 PeaceAreaWidth = 10   #和平区行数
 BattleAreaWidth = 5    #战斗区行数
 
-GRID_WIDTH = 30    #单个格子边长
 GRID_NUM_WIDTH = PeaceAreaWidth*2 + BattleAreaWidth    #格子总数（水平方向）
 GRID_NUM_HEIGHT = 10    #格子总数（竖直方向）
 WIDTH, HEIGHT = GRID_WIDTH * GRID_NUM_WIDTH, GRID_WIDTH * GRID_NUM_HEIGHT    #全部格子宽度与高度（屏幕总高）
+
 SIDE_WIDTH = 200    #右侧注释宽度
 SCREEN_WIDTH = WIDTH + SIDE_WIDTH    #屏幕总宽
 
@@ -97,7 +103,7 @@ class Wall():
 
 
     def show_text(self, text, size, x, y, color=(0xff, 0xff, 0xff),bgColor = None):
-        fontObj = pygame.font.Font('font/font.ttc', size)
+        fontObj = pygame.font.Font('font/lxgw.ttf', size)
         textSurfaceObj = fontObj.render(text, True, color,bgColor)
         textRectObj = textSurfaceObj.get_rect()
         textRectObj.center = (x, y)
@@ -160,14 +166,11 @@ class Brick():
             pygame.draw.rect(screen, self.color, (cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH))
             pygame.draw.rect(screen, WHITE, (cube[1] * GRID_WIDTH + WIDTH + 100, cube[0] * GRID_WIDTH + 60, GRID_WIDTH, GRID_WIDTH), 2)
 
-# 输入先后手玩家名称
-team1 = input()
-team2 = input()
+
 
 # 绘制场地并开始比赛
 agame = main.Game(team1, team2, 10)
 w =  Wall()
-FPS = 20 # FPS越大速度越快！
 while agame.state == 'gaming':
 
     pygame.display.update()
@@ -198,3 +201,7 @@ while agame.state == 'gaming':
 
 #游戏结束广播
 agame.end()
+if STATIS:
+    agame.sta()
+pygame.quit()
+sys.exit()

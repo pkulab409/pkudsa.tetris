@@ -6,6 +6,11 @@ import copy
 import ReviewData
 import Block
 
+# 调试窗口
+team1="stupidAI1"
+team2="stupidAI1"
+STATIS = True  #返回战术统计
+
 #奖励字典
 peacepoint = {0:0, 1:0, 2:1, 3:2, 4:4}
 battlepoint = {0:0, 1:1, 2:2, 3:4, 4:8}
@@ -13,6 +18,7 @@ battlepoint = {0:0, 1:1, 2:2, 3:4, 4:8}
 #棋盘属性
 PeaceAreaWidth = 10    #和平区行数
 BattleAreaWidth = 5    #战斗区行数
+
 
 #先手玩家的编号是first, 玩家2的编号是last
 #棋盘的左上角为坐标原点(0, 0)
@@ -29,11 +35,11 @@ def import_by_name(player_name, is_first):
     exec(f'''from players.{player_name} import Player;pool.append(Player({is_first}))''')
     return pool.pop()
 
-
 class Game:
     def __init__(self, teamfirst, teamlast, limit = 9999): # limit是每回合时间限制,team是玩家队伍和文件名
         self.matchdata = MatchData.MatchData() #创建一个供玩家调用数据和方法的类
         #定义游戏类的各种属性
+        self.stas=[0,[0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0]]
         self.block = -1 # 本回合方块,初始化为 -1
         self.teamname = [teamfirst,teamlast]
         self.state = "gaming"
@@ -91,7 +97,7 @@ class Game:
         self.matchdata.time1 = self.time1
         self.matchdata.time2 = self.time2
         self.matchdata.board = copy.deepcopy(self.board.list)
-        self.matchdata.pack = self.pack
+        self.matchdata.pack = copy.deepcopy(self.pack)
         self.matchdata.point1 = self.point1
         self.matchdata.point2 = self.point2
         self.matchdata.time = self.time
@@ -178,6 +184,7 @@ class Game:
         self.reviewData.chessboardData['stolenLines'] = stolenLines
         if len(stolenLines):
             self.roundtag.append('p{} 偷消'.format(player))
+            self.stas[player][9]+=1
         if self.hold:
             self.roundtag.append('僵持')
         self.reviewData.chessboardData['tag'] = self.roundtag
@@ -188,12 +195,21 @@ class Game:
         player = 1 if self.isFirst else 2
         peaceline, battleline = self.board.erase() # 更新棋盘
         self.visualBoard.eraseVisual()
+        if peaceline:
+            self.stas[player][2+peaceline]+=1
+        if battleline:
+            self.stas[player][5+battleline]+=1
+        self.stas[player][0]+=battlepoint[battleline]+peacepoint[peaceline]
+        self.stas[player][1]+=peacepoint[peaceline]
+        self.stas[player][2]+=battlepoint[battleline]
         if peaceline + battleline >= 3: # 添加回合标签(多消,偷消)
             self.roundtag.append('p{} {}消'.format(player, peaceline + battleline))
         additionalPoint = 0
         if battleline:
             self.removeline = True
             additionalPoint = battlepoint[battleline] + peacepoint[peaceline] + self.combo
+            self.stas[0]=max(self.stas[0],self.combo)
+            self.stas[player][10]+=self.combo
         else:
             additionalPoint = battlepoint[battleline] + peacepoint[peaceline]
         if self.isFirst:
@@ -229,6 +245,7 @@ class Game:
             else: self.previousLeader = leader
         if self.combo > 3:
             self.roundtag.append('本回合已经{}连消！'.format(self.combo))
+            self.stas[0]=max(self.stas[0],self.combo)
         self.reviewData.chessboardData['middleboard'] = False
         self.reviewData.chessboardData['action'] = None
         self.reviewData.chessboardData['newblock'] = None
@@ -236,13 +253,14 @@ class Game:
         self.reviewData.chessboardData['tag'] = self.roundtag
         self.saveToReviewData()
         self.roundtag = []
+        
 
     # 每个回合都要进行的游戏
     def turn(self):
         self.time += 1
         if self.time == 560:
             self.state = "round limit" # 达到回合数上限
-            self.reviewData.gameData["reason"] = "得分统计"
+            self.reviewData.gameData["reason"] = "{}:{}".format(self.point1, self.point2)
         self.block = self.pack.get(self.time) # 取出下一块
         
         if self.time % 2 == 1: # 先手玩家操作
@@ -264,8 +282,7 @@ class Game:
             if len(validAction) == 0: return None
             action = self.runPlayerFunc(validAction)
             if action == None: return None
-            self.matchdata.action = action # 将action存入matchdata,以便先手玩家直接调用
-
+            self.matchdata.action = action # 将action存入matchdata, 以便后手玩家直接调用
             self.visualBoard.reverse()
             self.saveFrameBeforeErase(action) # 保存消行前帧
             self.visualBoard.reverse()
@@ -274,24 +291,38 @@ class Game:
             self.board.reverse() # 把棋盘翻转回去
             self.visualBoard.reverse()
             self.saveFrameAfterErase()
+            
+    def sta(self):
+        a=self.stas
+        print('双方最高连击{}次'.format(a[0]))
+        print("玩家1"," 分数",self.point1,end=" ")
+        print("偷消{}次 连击奖励{}分".format(a[1][9],a[1][10]))
+        print("和平区  单消{}次 双消{}次 三消{}次".format(a[1][3],a[1][4],a[1][5]))
+        print("战斗区  单消{}次 双消{}次 三消{}次".format(a[1][6],a[1][7],a[1][8]))
+        
+        print("玩家2"," 分数",self.point2,end=" ")
+        print("偷消{}次 连击奖励{}分".format(a[2][9],a[2][10]))
+        print("和平区  单消{}次 双消{}次 三消{}次".format(a[2][3],a[2][4],a[2][5]))
+        print("战斗区  单消{}次 双消{}次 三消{}次".format(a[2][6],a[2][7],a[2][8]))
+        
 
     # 游戏结束的广播
     def end(self):
-        print("本局游戏结束")
+        print("本局游戏结束",end="  ")
         if self.state == 'round limit':
             if self.point1 > self.point2: self.winner = 1
             elif self.point1 < self.point2: self.winner = 2
             else: self.winner = "平局"
-        print("胜者是",self.winner)
-        print("分数",self.point1, self.point2)
+        print("胜者是",self.winner,end="  ")
         print("游戏结束原因是", self.state)
-        print(self.time)
+        if self.time!=560:
+            print(self.time)
         diff = abs(self.point1 - self.point2)
         if diff >= 100: self.tag.append(["完胜", "green"])
         elif diff >= 50: self.tag.append(["大胜", "green"])
         # elif diff >= 5: self.tag.append(["小胜", "green"])
         elif 0 < diff < 5: self.tag.append(["险胜", "green"])
-        if self.stolenNum >= 6:
+        if self.stolenNum >= 10:
             self.tag.append(["偷鸡摸狗!", "red"])
         if self.overtakeNum >= 3:
             self.tag.append(["十分胶着!", "orange"])
@@ -307,9 +338,11 @@ class Game:
 
 if __name__ == "__main__":
     import os
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    play = Game("stupidAI1","stupidAI2",100)
+    play = Game(team1,team2,10)
     while play.state == "gaming":
         play.turn()
     play.end()
+    if STATIS:
+        play.sta()

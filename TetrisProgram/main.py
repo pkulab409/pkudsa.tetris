@@ -67,18 +67,23 @@ class Game:
         self.overtakeNum = 0
         self.maxCombo = 0
 
+        # 报错信息记录
+        self.errors = [None] * 2
+
         # 读入玩家程序,读不到判负
         try:
             self.player.append(import_by_name(teamfirst, True))
-        except:
+        except Exception as e:
             self.winner = 2
             print("p1 ai missing")
             self.state = "judge to end"
             self.tag.append(["p1 ai missing", "grey"])
             self.reviewData.gameData["reason"] = "对方失踪"
+            self.errors[0] = e
         try:
             self.player.append(import_by_name(teamlast, False))
-        except:
+        except Exception as e:
+            self.errors[1] = e
             if self.state == "judge to end":
                 print("p2 ai missing")
                 self.winner = -1
@@ -134,12 +139,13 @@ class Game:
         T1 = time.time()
         try:
             action = self.player[player - 1].output(self.matchdata)
-        except Exception: # 程序出错
+        except Exception as e: # 程序出错
             print("p{} ai error!".format(player))
             self.state = 'p{} error'.format(player)
             self.winner = 2 if self.isFirst else 1
             self.tag.append(["p{} 程序出错".format(player), "grey"])
             self.reviewData.gameData["reason"] = "对方出错"
+            self.errors[player - 1] = e
             return None
         T2 = time.time() # 决策结束, 计时结束
     

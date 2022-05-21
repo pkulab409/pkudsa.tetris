@@ -35,7 +35,6 @@ def import_by_name(player_name, is_first):
     exec(f'''from players.{player_name} import Player;pool.append(Player({is_first}))''')
     return pool.pop()
 
-
 class Game:
     def __init__(self, teamfirst, teamlast, limit = 9999): # limit是每回合时间限制,team是玩家队伍和文件名
         self.matchdata = MatchData.MatchData() #创建一个供玩家调用数据和方法的类
@@ -254,6 +253,7 @@ class Game:
         self.reviewData.chessboardData['tag'] = self.roundtag
         self.saveToReviewData()
         self.roundtag = []
+        
 
     # 每个回合都要进行的游戏
     def turn(self):
@@ -282,8 +282,7 @@ class Game:
             if len(validAction) == 0: return None
             action = self.runPlayerFunc(validAction)
             if action == None: return None
-            self.matchdata.action = action # 将action存入matchdata,以便先手玩家直接调用
-
+            self.matchdata.action = action # 将action存入matchdata, 以便后手玩家直接调用
             self.visualBoard.reverse()
             self.saveFrameBeforeErase(action) # 保存消行前帧
             self.visualBoard.reverse()

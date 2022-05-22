@@ -31,8 +31,8 @@ try:
         raise Exception("CppAcceleration only support Windows and Linux!")
 
 except:
-    import traceback
-    traceback.print_exc()
+    # import traceback
+    # traceback.print_exc()
     CppAcceleration = None
     print("Does not support CppAcceleration!")
 
@@ -115,6 +115,26 @@ class MatchData:
             for x in range(10):
                 for pos in range(4):
                     if phaseboard[y][x][pos]:
+                        if type == 1:
+                            if pos == 2:
+                                if phaseboard[y][x-1][0]: continue
+                            elif pos == 3:
+                                if phaseboard[y-1][x][1]: continue
+                        elif type == 4:
+                            if pos == 1:
+                                if phaseboard[y+1][x][0]: continue
+                            elif pos == 2:
+                                if phaseboard[y+1][x-1][0]: continue
+                                if phaseboard[y][x-1][1]: continue
+                            elif pos == 3:
+                                if phaseboard[y][x-1][0]: continue
+                                if phaseboard[y-1][x-1][1]: continue
+                                if phaseboard[y-1][x][2]: continue
+                        elif type == 5 or type == 7:
+                            if pos == 2:
+                                if phaseboard[y+1][x][0]: continue
+                            elif pos == 3:
+                                if phaseboard[y][x-1][1]: continue
                         result.append((y, x, pos))
         return result
 
@@ -178,35 +198,40 @@ class MatchData:
         return [(y ,x) for x, y in block.showblock()]
 
     def removeLines(self,board):
-        line1 = 0    # 用于返回和平区消行数量
-        line2 = 0    # 用于返回战争区消行数量
-        
+        line1 = 0    #用于返回和平区消行数量
+        line2 = 0    #用于返回战争区消行数量
+
         part1 = board[0:15]
         part2 = board[15:25]
         dellist = []
         for i in range(10):
             if 0 not in part1[i]:
-                dellist.append(i)
                 line1 += 1
         for i in range(10,15):
             if 0 not in part1[i]:
-                dellist.append(i)
                 line2 += 1
-        while dellist:
-            part1.pop(dellist.pop())
+        n=0
+        while n<len(part1):
+            if 0 not in part1[n]:
+                del part1[n]
+                n-=1
+            elif part1[n]==[0 for i in range(10)] and line2:
+                del part1[n]
+                n-=1
+            n+=1
 
-        part1 = [[0 for i in range(10)] for j in range(line1 + line2)] + part1
-        boardreturn = part1 + part2
+        part1 = [[0 for i in range(10)] for j in range(15-len(part1))] + part1
+        lis = part1 + part2
 
-        return (boardreturn,line1,line2)
-
+        return (lis,line1,line2)
+    
     def getReverseBoard(self,board):
         for i in board:
             i.reverse()
         board.reverse()
         return board
 
-    def copyReverseBoard(self,board):
+    def copyReversedBoard(self,board):
         return [l[::-1] for l in reversed(board)]
 
     def getLastAction(self):

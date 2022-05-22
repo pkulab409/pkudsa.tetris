@@ -139,7 +139,7 @@ class MatchData:
         return result
 
     def getValidActionSlow(self):    # 返回针对当前块的可能位置
-        return self.getAllValidAction(self.block, self.board)
+        return self.getAllValidActionSlow(self.block, self.board)
 
     def getValidAction(self):
         return self.getAllValidAction(self.block, self.board)

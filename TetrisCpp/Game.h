@@ -215,14 +215,20 @@ struct Board
 	// Erase full lines and return erased lines number in peace area and battle area
 	void erase(unsigned int* peace_, unsigned int* battle_)
 	{
+		int max_erased_peace_line(-1);
 		unsigned int peace(0), battle(0);
-		for (int c0(PlayerWidth - 1); c0 >= PeaceAreaWidth; --c0)
+		for (int c0(0); c0 < PeaceAreaWidth; ++c0)
+			if (board[c0] == 0x1FF800u)
+			{
+				peace += 1;
+				max_erased_peace_line = c0;
+			}
+		for (int c0(PeaceAreaWidth); c0 < PlayerWidth; ++c0)
 			if (board[c0] == 0x1FF800u)
 				battle += 1;
-		for (int c0(PeaceAreaWidth - 1); c0 >= 0; --c0)
-			if (board[c0] == 0x1FF800u)
-				peace += 1;
-		int upper(PlayerWidth - 1), lower(PlayerWidth - 1);
+		int upper, lower;
+		if (battle) upper = lower = PlayerWidth - 1;
+		else upper = lower = max_erased_peace_line;
 		while (lower >= 0)
 		{
 			while (lower >= 0 && board[lower] == 0x1FF800u)

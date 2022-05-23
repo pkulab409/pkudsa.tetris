@@ -7,8 +7,8 @@ import ReviewData
 import Block
 
 # 调试窗口
-team1="Smart_Fast"
-team2="Smart_Fast"
+team1="stupidAI1"
+team2="stupidAI2"
 STATIS = True  #返回战术统计
 
 #奖励字典

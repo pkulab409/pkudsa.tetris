@@ -210,8 +210,8 @@ class MatchData:
     def getCurrentBlock(self):    # 返回当前需要操作的下落块
         timenow = self.time
         return self.pack.get(timenow)
-
-    def getBlockList(self):    # 返回本局的整个下落块列表
+        
+    def getBlockList(self) -> list:    # 返回本局的整个下落块列表
         return self.pack.list
 
     def getBlock(self,round,isFirst):    # 返回任意回合和先后手的块

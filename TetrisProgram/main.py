@@ -7,8 +7,8 @@ import ReviewData
 import Block
 
 # 调试窗口
-team1="stupidAI1"
-team2="stupidAI1"
+team1="Smart_Fast"
+team2="Smart_Fast"
 STATIS = True  #返回战术统计
 
 #奖励字典
@@ -310,6 +310,7 @@ class Game:
         print("偷消{}次 连击奖励{}分".format(a[2][9],a[2][10]))
         print("和平区  单消{}次 双消{}次 三消{}次".format(a[2][3],a[2][4],a[2][5]))
         print("战斗区  单消{}次 双消{}次 三消{}次".format(a[2][6],a[2][7],a[2][8]))
+        print(self.errors)
         
 
     # 游戏结束的广播

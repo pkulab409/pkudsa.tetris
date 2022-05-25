@@ -48,6 +48,7 @@ class MatchData:
         self.point1 = None
         self.point2 = None
         self.combo = None
+        self.removeline = None
         self.action = None
 
 
@@ -210,8 +211,8 @@ class MatchData:
     def getCurrentBlock(self):    # 返回当前需要操作的下落块
         timenow = self.time
         return self.pack.get(timenow)
-
-    def getBlockList(self):    # 返回本局的整个下落块列表
+        
+    def getBlockList(self) -> list:    # 返回本局的整个下落块列表
         return self.pack.list
 
     def getBlock(self,round,isFirst):    # 返回任意回合和先后手的块
@@ -225,6 +226,9 @@ class MatchData:
 
     def getCombo(self):    # 返回连击数
         return self.combo
+
+    def getRemoveLineInBattle(self):
+        return self.removeline
 
     def getOpponentPoint(self):    # 查看对手的分数
         if self.isFirst:

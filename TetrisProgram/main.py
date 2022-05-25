@@ -43,6 +43,7 @@ class Game:
         self.block = -1 # 本回合方块,初始化为 -1
         self.teamname = [teamfirst,teamlast]
         self.state = "gaming"
+        self.limit = limit
         self.time1 = limit # 玩家1剩余时间
         self.time2 = limit # 玩家2剩余时间
         self.board = Board.Board(PeaceAreaWidth, BattleAreaWidth) # 棋盘
@@ -106,6 +107,7 @@ class Game:
         self.matchdata.point1 = self.point1
         self.matchdata.point2 = self.point2
         self.matchdata.time = self.time
+        self.matchdata.removeline = self.removeline
         self.matchdata.combo = self.combo
 
     # 记录复盘数据
@@ -264,11 +266,7 @@ class Game:
     # 每个回合都要进行的游戏
     def turn(self):
         self.time += 1
-        if self.time == 560:
-            self.state = "round limit" # 达到回合数上限
-            self.reviewData.gameData["reason"] = "{}:{}".format(self.point1, self.point2)
         self.block = self.pack.get(self.time) # 取出下一块
-        
         if self.time % 2 == 1: # 先手玩家操作
             self.round += 1
             self.isFirst = True
@@ -297,20 +295,26 @@ class Game:
             self.board.reverse() # 把棋盘翻转回去
             self.visualBoard.reverse()
             self.saveFrameAfterErase()
+        if self.time == 560:
+            self.state = "round limit" # 达到回合数上限
+            self.reviewData.gameData["reason"] = "{}:{}".format(self.point1, self.point2)
             
     def sta(self):
-        a=self.stas
-        print('双方最高连击{}次'.format(a[0]))
-        print("玩家1"," 分数",self.point1,end=" ")
-        print("偷消{}次 连击奖励{}分".format(a[1][9],a[1][10]))
-        print("和平区  单消{}次 双消{}次 三消{}次".format(a[1][3],a[1][4],a[1][5]))
-        print("战斗区  单消{}次 双消{}次 三消{}次".format(a[1][6],a[1][7],a[1][8]))
+        a = self.stas
+        print("{}:{}".format(self.point1, self.point2))
+        print("最高连击: {}".format(a[0]))
+        print("玩家1")
+        print("平均耗时{:.3f}ms".format(1000*(self.limit-self.time1)/self.round), end=" ")
+        print("偷消:{} 连击奖励:{}".format(a[1][9],a[1][10]))
+        print("和平区  单消:{} 双消:{} 三消:{}".format(a[1][3],a[1][4],a[1][5]))
+        print("战斗区  单消:{} 双消:{} 三消:{}".format(a[1][6],a[1][7],a[1][8]))
         
-        print("玩家2"," 分数",self.point2,end=" ")
-        print("偷消{}次 连击奖励{}分".format(a[2][9],a[2][10]))
-        print("和平区  单消{}次 双消{}次 三消{}次".format(a[2][3],a[2][4],a[2][5]))
-        print("战斗区  单消{}次 双消{}次 三消{}次".format(a[2][6],a[2][7],a[2][8]))
-        print(self.errors)
+        print("玩家2")
+        print("平均耗时{:.3f}ms".format(1000*(self.limit-self.time2)/self.round), end=" ")
+        print("偷消:{} 连击奖励:{}".format(a[2][9],a[2][10]))
+        print("和平区  单消:{} 双消:{} 三消:{}".format(a[2][3],a[2][4],a[2][5]))
+        print("战斗区  单消:{} 双消:{} 三消:{}".format(a[2][6],a[2][7],a[2][8]))
+        if self.errors != [None, None]: print(self.errors)
         
 
     # 游戏结束的广播

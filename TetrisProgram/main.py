@@ -43,6 +43,7 @@ class Game:
         self.block = -1 # 本回合方块,初始化为 -1
         self.teamname = [teamfirst,teamlast]
         self.state = "gaming"
+        self.limit = limit
         self.time1 = limit # 玩家1剩余时间
         self.time2 = limit # 玩家2剩余时间
         self.board = Board.Board(PeaceAreaWidth, BattleAreaWidth) # 棋盘
@@ -106,6 +107,7 @@ class Game:
         self.matchdata.point1 = self.point1
         self.matchdata.point2 = self.point2
         self.matchdata.time = self.time
+        self.matchdata.removeline = self.removeline
         self.matchdata.combo = self.combo
 
     # 记录复盘数据
@@ -299,18 +301,21 @@ class Game:
             self.saveFrameAfterErase()
             
     def sta(self):
-        a=self.stas
-        print('双方最高连击{}次'.format(a[0]))
-        print("玩家1"," 分数",self.point1,end=" ")
-        print("偷消{}次 连击奖励{}分".format(a[1][9],a[1][10]))
-        print("和平区  单消{}次 双消{}次 三消{}次".format(a[1][3],a[1][4],a[1][5]))
-        print("战斗区  单消{}次 双消{}次 三消{}次".format(a[1][6],a[1][7],a[1][8]))
+        a = self.stas
+        print("{}:{}".format(self.point1, self.point2))
+        print("最高连击: {}".format(a[0]))
+        print("玩家1")
+        print("平均耗时{:.3f}ms".format(1000*(self.limit-self.time1)/self.round), end=" ")
+        print("偷消:{} 连击奖励:{}".format(a[1][9],a[1][10]))
+        print("和平区  单消:{} 双消:{} 三消:{}".format(a[1][3],a[1][4],a[1][5]))
+        print("战斗区  单消:{} 双消:{} 三消:{}".format(a[1][6],a[1][7],a[1][8]))
         
-        print("玩家2"," 分数",self.point2,end=" ")
-        print("偷消{}次 连击奖励{}分".format(a[2][9],a[2][10]))
-        print("和平区  单消{}次 双消{}次 三消{}次".format(a[2][3],a[2][4],a[2][5]))
-        print("战斗区  单消{}次 双消{}次 三消{}次".format(a[2][6],a[2][7],a[2][8]))
-        print(self.errors)
+        print("玩家2")
+        print("平均耗时{:.3f}ms".format(1000*(self.limit-self.time2)/self.round), end=" ")
+        print("偷消:{} 连击奖励:{}".format(a[2][9],a[2][10]))
+        print("和平区  单消:{} 双消:{} 三消:{}".format(a[2][3],a[2][4],a[2][5]))
+        print("战斗区  单消:{} 双消:{} 三消:{}".format(a[2][6],a[2][7],a[2][8]))
+        if self.errors != [None, None]: print(self.errors)
         
 
     # 游戏结束的广播

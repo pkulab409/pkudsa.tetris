@@ -48,6 +48,7 @@ class MatchData:
         self.point1 = None
         self.point2 = None
         self.combo = None
+        self.removeline = None
         self.action = None
 
 
@@ -225,6 +226,9 @@ class MatchData:
 
     def getCombo(self):    # 返回连击数
         return self.combo
+
+    def getRemoveLineInBattle(self):
+        return self.removeline
 
     def getOpponentPoint(self):    # 查看对手的分数
         if self.isFirst:

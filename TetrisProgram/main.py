@@ -266,11 +266,7 @@ class Game:
     # 每个回合都要进行的游戏
     def turn(self):
         self.time += 1
-        if self.time == 560:
-            self.state = "round limit" # 达到回合数上限
-            self.reviewData.gameData["reason"] = "{}:{}".format(self.point1, self.point2)
         self.block = self.pack.get(self.time) # 取出下一块
-        
         if self.time % 2 == 1: # 先手玩家操作
             self.round += 1
             self.isFirst = True
@@ -299,6 +295,9 @@ class Game:
             self.board.reverse() # 把棋盘翻转回去
             self.visualBoard.reverse()
             self.saveFrameAfterErase()
+        if self.time == 560:
+            self.state = "round limit" # 达到回合数上限
+            self.reviewData.gameData["reason"] = "{}:{}".format(self.point1, self.point2)
             
     def sta(self):
         a = self.stas

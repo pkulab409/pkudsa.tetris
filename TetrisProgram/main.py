@@ -351,7 +351,7 @@ if __name__ == "__main__":
     import os
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-    play = Game(team1,team2,10)
+    play = Game(team1,team2,20)
     while play.state == "gaming":
         play.turn()
     play.end()

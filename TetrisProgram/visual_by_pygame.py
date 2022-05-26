@@ -169,7 +169,7 @@ class Brick():
 
 
 # 绘制场地并开始比赛
-agame = main.Game(team1, team2, 10)
+agame = main.Game(team1, team2, 20)
 w =  Wall()
 while agame.state == 'gaming':
 

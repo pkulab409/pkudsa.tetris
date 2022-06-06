@@ -1,10 +1,8 @@
 import main
-from typing import List, Callable
+from typing import List
+import multiprocessing
 import os
 import random
-import sys
-import json
-
 
 rule1 = \
 [
@@ -39,14 +37,9 @@ class EliminationGame:
         self.participants = participants
         self.repeat = repeat
 
-    def match(self, player1_index: int, player2_index: int, roundname):
-        print("-"*40)
-        print(f"{self.participants[player1_index]} VS {self.participants[player2_index]}")
-        score = [0, 0]
-        player1 = self.participants[player1_index]
-        player2 = self.participants[player2_index]
-        for turn in range(self.repeat):
-            if turn%2 == 0: # 先手局, 存储blocklist, 留给后手局使用
+    def beginMatch(self, turn, player1, player2, roundname):
+        for k in [0 , 1]:
+            if k == 0: # 先手局, 存储blocklist, 留给后手局使用
                 g = main.Game(player1, player2, 20) # 生成先手局比赛
                 blocklist = g.pack.list[:]
             else: # 后手局, 使用先手局存储的blocklist
@@ -76,23 +69,68 @@ class EliminationGame:
             # 保存复盘数据
             g.reviewData.gameData['winner'] = g.winner
             g.reviewData.gameData['tag'] = g.tag
-            g.reviewData.EliminationGameSave(turn, player1, player2, roundname) # 保存路径？
+            g.reviewData.EliminationGameSave(turn*2 + k, player1, player2, roundname) # 保存路径？
 
-            # 记录比分
-            if turn%2 == 0: # 先手局
-                if g.winner == 1: score[0] += 1 # 先手玩家获胜
-                elif g.winner == 2: score[1] += 1 # 后手玩家获胜
-                else: pass # 平局？
+            # 记录比分与耗时
+            if k == 0: # 先手局
+                if g.winner == 1: # 先手玩家获胜
+                    self.score1.value += 1 
+                    print(f'{player1[4:]} vs {player2[4:]} -- {g.point1} : {g.point2} -- {player1[4:]} wins!  --  {g.reviewData.gameData["reason"]}  --  {g.reviewData.gameData["tag"][-1][0]}')
+                elif g.winner == 2: # 后手玩家获胜
+                    self.score2.value += 1 
+                    print(f'{player1[4:]} vs {player2[4:]} -- {g.point1} : {g.point2} -- {player2[4:]} wins!  --  {g.reviewData.gameData["reason"]}  --  {g.reviewData.gameData["tag"][-1][0]}')
+                else: 
+                    print(f'{player1[4:]} vs {player2[4:]} -- {g.point1} : {g.point2} -- 平局！')
+                
+                self.p1_left_time.value += g.time1
+                self.p2_left_time.value += g.time2
+
             else:
-                if g.winner == 1: score[1] += 1 # 先手玩家获胜
-                elif g.winner == 2: score[0] += 1 # 后手玩家获胜
-                else: pass # 平局？
-            if score[0] > self.repeat // 2 + 1 or \
-                score[1] > self.repeat // 2 + 1:
-                break # 胜负已分, 比赛结束
+                if g.winner == 1: # 先手玩家获胜
+                    self.score2.value += 1 
+                    print(f'{player2[4:]} vs {player1[4:]} -- {g.point1} : {g.point2} -- {player2[4:]} wins!  --  {g.reviewData.gameData["reason"]}  --  {g.reviewData.gameData["tag"][-1][0]}')
+                elif g.winner == 2: # 后手玩家获胜
+                    self.score1.value += 1 
+                    print(f'{player2[4:]} vs {player1[4:]} -- {g.point1} : {g.point2} -- {player1[4:]} wins!  --  {g.reviewData.gameData["reason"]}  --  {g.reviewData.gameData["tag"][-1][0]}')
+                else:
+                    print(f'{player2[4:]} vs {player1[4:]} -- {g.point1} : {g.point2} -- 平局！')
+                
+                self.p1_left_time.value += g.time2
+                self.p2_left_time.value += g.time1
+            
 
-        print(f"{score[0]} -- {score[1]}")
-        return (player1_index, player2_index) if score[0] > score[1] else (player2_index, player1_index)
+    def match(self, player1_index: int, player2_index: int, roundname): # 同时发起10场比赛
+        print("-"*40)
+        print(f"{self.participants[player1_index]} VS {self.participants[player2_index]}")
+
+        # 开启比赛
+        ans = int((player1_index + 2) * 2379/(player2_index + 5))
+        print('本场比赛开启代码为:', ans)
+        key = int(input())
+        while key != ans:
+            key = int(input('代码错误, 请重新输入:'))
+
+        self.score1 = multiprocessing.Value('i', 0)
+        self.score2 = multiprocessing.Value('i', 0)
+        self.p1_left_time = multiprocessing.Value('d', 0)
+        self.p2_left_time = multiprocessing.Value('d', 0)
+        player1 = self.participants[player1_index]
+        player2 = self.participants[player2_index]
+        
+        matchpool = []
+        for i in range(10):
+            game = multiprocessing.Process(target = self.beginMatch, args=(i, player1, player2, roundname))
+            matchpool.append(game)
+            game.start()
+        for g in matchpool:
+            g.join()
+
+        print(f"{self.score1.value} -- {self.score2.value}")
+        if self.score1.value == self.score2.value:
+            print('大比分相同, 耗时少者获胜')
+            print('胜者为:', f'{player1 if self.p1_left_time.value > self.p2_left_time.value else player2}')
+        print(f'{player1 if self.score1.value > self.score2.value else player2} 获胜！')
+        return (player1_index, player2_index) if self.score1.value > self.score2.value else (player2_index, player1_index)
 
     def make_groups(self, p1: int, p2: int): # 八强分组
         B1234 = [0,1,2,3]
@@ -102,6 +140,7 @@ class EliminationGame:
 
     def match_all(self, groups, info):
         print("="*40)
+        print("="*40)
         print(info["name"])
         print("本轮参赛队伍的对阵情况为：", *[f'{self.participants[x]} VS {self.participants[y]}   ' for x,y in groups])
         res = [[],[]]
@@ -110,6 +149,7 @@ class EliminationGame:
             res[0].append(winner)
             res[1].append(loser)
         print('')
+        print(f'{info["name"]} 结束！')
         print(f"胜者：{[self.participants[i] for i in res[0]]} -> {info['winner']}")
         print(f"败者：{[self.participants[i] for i in res[1]]} -> {info['loser']}")
         return res
@@ -120,6 +160,14 @@ class EliminationGame:
             str: The winner's name
         """
         eighth_winner1, eighth_winner2 = self.match_all([[6,8],[7,9]], rule1[0])[0]
+
+        # 开启比赛
+        ans = 666999
+        print('开启分组的代码为:', ans)
+        key = int(input())
+        while key != ans:
+            key = int(input('代码错误, 请重新输入:'))
+        
         group = self.make_groups(eighth_winner1, eighth_winner2) # 八强分组
         C1, C3, C4, C2 = self.match_all(group, rule1[1])[0] # 胜者进入四强
         semi_winners, semi_losers = self.match_all([[C1,C2], [C3,C4]], rule1[2])

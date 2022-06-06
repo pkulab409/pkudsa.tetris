@@ -50,3 +50,28 @@ class ReviewData:
     def saveToPath(self, path):
         with open(path, 'w') as f:
             json.dump(self.gameData, f)
+
+    def EliminationGameSave(self, turn:int, p1, p2, roundname):
+        folderPath = os.path.join(os.path.dirname(__file__),'EliminationGame review data/')
+        if not os.path.exists(folderPath):
+            os.mkdir(folderPath)
+        folderPath = os.path.join(os.path.dirname(__file__),'EliminationGame review data', roundname)
+        if not os.path.exists(folderPath):
+            os.mkdir(folderPath)
+        folderPath = os.path.join(os.path.dirname(__file__),'EliminationGame review data', roundname, '{} VS {}'.format(p1,p2))
+        if not os.path.exists(folderPath):
+            os.mkdir(folderPath)
+            
+        filename = '{} VS {} turn{} review data.json'.format(
+                                                        self.gameData['player1'],
+                                                        self.gameData['player2'],
+                                                        turn
+                                                        )
+        savepath = os.path.join(
+            os.path.dirname(__file__),
+            'EliminationGame review data',
+            roundname,
+            '{} vs {}'.format(p1,p2),
+            filename,
+        )
+        self.saveToPath(savepath)

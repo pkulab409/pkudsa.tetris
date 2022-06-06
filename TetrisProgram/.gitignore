@@ -1,2 +1,4 @@
 __pycache__/
 review data/*.json
+EliminationGame review data/
+EliminationGamePlayers/*.py

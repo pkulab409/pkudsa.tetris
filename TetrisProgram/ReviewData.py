@@ -52,20 +52,14 @@ class ReviewData:
             json.dump(self.gameData, f)
 
     def EliminationGameSave(self, turn:int, p1, p2, roundname):
-        folderPath = os.path.join(os.path.dirname(__file__),'EliminationGame review data', roundname, '{} VS {}'.format(p1,p2))
+        folderPath = os.path.join('/home/lab409/django_ai_arena/_STORAGE/results/006', roundname, '{} VS {}'.format(p1,p2))
         if not os.path.exists(folderPath):
             os.makedirs(folderPath,exist_ok = 1)
             
-        filename = '{} VS {} turn{} review data.json'.format(
-                                                        self.gameData['player1'],
-                                                        self.gameData['player2'],
-                                                        turn
-                                                        )
-        savepath = os.path.join(
-            os.path.dirname(__file__),
-            'EliminationGame review data',
-            roundname,
-            '{} vs {}'.format(p1,p2),
-            filename,
-        )
+        filename = '{} VS {} turn{}.json'.format(
+                                                self.gameData['player1'][4:],
+                                                self.gameData['player2'][4:],
+                                                turn
+                                                )
+        savepath = os.path.join(folderPath, filename)
         self.saveToPath(savepath)
